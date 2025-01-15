@@ -53,6 +53,8 @@ export type Track = {
   restrictions: string;
   preview_url: string;
   type: string;
+  duration_ms: number;
+  explicit: boolean;
   artists: {
     href: string;
     id: string;
@@ -66,5 +68,8 @@ export type Track = {
       height: number;
       width: number;
     }[];
+  };
+  external_urls: {
+    spotify: string;
   };
 };

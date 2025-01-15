@@ -23,11 +23,11 @@ const DEFAULT_PARAMETERS: Parameters = {
 
 const DUMMY_LIST = [
   'Softly,Karan Aujla',
-  'City of Stars,Logic',
+  'City Of Stars,Logic',
   'No Face,Drake',
   'Sorry Not Sorry,Bryson Tiller',
   'Surround Sound,JID',
-  'Pistolero,MGK',
+  'El Pistolero,mgk',
   'Not Like Us,Kendrick Lamar',
   'Family Matters,Drake',
   'Stealth Mode,J. Cole',
@@ -72,19 +72,19 @@ function App() {
   };
 
   const handleRecommend = async () => {
-    const promises: Promise<Track>[] = [];
-    DUMMY_LIST.forEach((track) => {
-      const [trackName, artist] = track.split(',');
-      promises.push(searchTrack(trackName, artist));
+    const promises = DUMMY_LIST.map((entry) => {
+      const [trackname, artistname] = entry.split(',');
+      return searchTrack(trackname, artistname);
     });
 
-    const tracks = await Promise.all(promises);
-    setTracks(tracks);
+    const newTracks = await Promise.all(promises);
+    console.log(newTracks);
+    setTracks(newTracks.filter((track) => Boolean(track)) as Track[]);
   };
 
   return (
-    <div className="pt-[10px] pb-[20px] flex flex-col items-center">
-      <p className="text-4xl text-center">Music Muse</p>
+    <div className="pt-[20px] pb-[20px] flex flex-col items-center bg-stone-800">
+      <p className="text-4xl text-center text-stone-200">Music Muse</p>
 
       <div className="mt-[40px] flex flex-col gap-[35px] mb-[50px]">
         <div className="flex flex-col gap-[20px]">
@@ -128,9 +128,9 @@ function App() {
 
         <button
           onClick={handleRecommend}
-          className="hover:cursor-pointer border-2 border-black rounded-md px-2 py-1"
+          className="hover:cursor-pointer border-2 border-stone-400 rounded-md px-2 py-1"
         >
-          Recommend
+          <p className="text-stone-300">Recommend</p>
         </button>
       </div>
 

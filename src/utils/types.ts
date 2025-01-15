@@ -46,3 +46,25 @@ export type Parameters = {
   mood: Mood;
   activity: Activity;
 };
+
+export type Track = {
+  id: string;
+  name: string;
+  restrictions: string;
+  preview_url: string;
+  type: string;
+  artists: {
+    href: string;
+    id: string;
+    name: string;
+  }[];
+  album: {
+    id: string;
+    href: string;
+    images: {
+      url: string;
+      height: number;
+      width: number;
+    }[];
+  };
+};

@@ -16,19 +16,28 @@ const TrackList = ({ tracks }: TrackListProps) => {
           }}
           className="animate-appear flex flex-col gap-[10px]"
         >
-          <img
-            className="w-[90px]"
-            src="src/assets/spotify/full_logo_white.png"
-          />
-
           <a
             href={track.external_urls.spotify}
             target="_blank"
-            className="flex flex-col items-center w-[150px] gap-[5px] group"
+            className="flex flex-col items-center w-[150px] gap-[10px] group"
           >
+            <div className="flex w-full justify-between">
+              <img
+                className="w-[90px]"
+                src="src/assets/spotify/full_logo_white.png"
+              />
+
+              <div className="flex justify-end items-end w-full invisible group-hover:visible">
+                <img
+                  src="src/assets/arrow_outward.png"
+                  className="w-[20px] h-[20px]"
+                />
+              </div>
+            </div>
+
             <div className="w-[150px] h-[150px] flex justify-center items-center">
               <img
-                className="h-[150px] w-[150px] group-hover:h-[145px] group-hover:w-[145px]"
+                className="transition duration-300 tranform ease-in-out h-[150px] w-[150px] group-hover:scale-95"
                 src={track.album.images[0].url}
               />
             </div>
@@ -37,6 +46,7 @@ const TrackList = ({ tracks }: TrackListProps) => {
               <p className="text-center text-stone-300 font-bold group-hover:underline">
                 {track.name}
               </p>
+
               <p className="text-stone-400 text-center">
                 {track.artists[0].name}
               </p>

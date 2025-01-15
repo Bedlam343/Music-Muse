@@ -7,7 +7,8 @@ import {
   Activity,
   Track,
 } from 'src/utils/types';
-import TrackList from './components/TrackList';
+import TrackList from 'src/components/TrackList';
+import useSpotify from 'src/hooks/useSpotify';
 
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string;
 const SPOTIFY_CLIENT_SECRET = import.meta.env
@@ -40,6 +41,8 @@ function App() {
   });
   const [tracks, setTracks] = useState<Track[]>([]);
 
+  const { searchTrack } = useSpotify(spotifyAccessToken);
+
   useEffect(() => {
     const getAccessToken = async () => {
       const response = await fetch('https://accounts.spotify.com/api/token', {
@@ -59,20 +62,6 @@ function App() {
 
     if (!spotifyAccessToken) getAccessToken();
   }, [spotifyAccessToken]);
-
-  const searchTrack = async (trackName: string, artistName: string) => {
-    const query = encodeURIComponent(`${trackName} artist:${artistName}`);
-    return fetch(
-      `https://api.spotify.com/v1/search?q=${query}&type=track&limit=1`,
-      {
-        headers: {
-          Authorization: `Bearer ${spotifyAccessToken}`,
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => data.tracks.items[0] as Track);
-  };
 
   const handleParameterChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const parameter = event.target.id as keyof Parameters;
@@ -94,7 +83,7 @@ function App() {
   };
 
   return (
-    <div className="py-[10px] flex flex-col items-center">
+    <div className="pt-[10px] pb-[20px] flex flex-col items-center">
       <p className="text-4xl text-center">Music Muse</p>
 
       <div className="mt-[40px] flex flex-col gap-[35px] mb-[50px]">

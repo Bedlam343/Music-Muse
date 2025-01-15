@@ -6,9 +6,16 @@ type TrackListProps = {
 
 const TrackList = ({ tracks }: TrackListProps) => {
   return (
-    <div className="flex justify-center  gap-[10px] w-[800px] flex-wrap">
-      {tracks.map((track) => (
-        <div key={track.id} className="flex flex-col items-center w-[150px]">
+    <div className="flex justify-center  gap-[10px] max-w-[800px] flex-wrap">
+      {tracks.map((track, index) => (
+        <div
+          key={track.id}
+          style={{
+            opacity: 0,
+            animationDelay: `${0.1 * index}s`,
+          }}
+          className={`flex flex-col items-center w-[150px] animate-appear`}
+        >
           <img
             className="h-[150px] w-[150px]"
             src={track.album.images[0].url}

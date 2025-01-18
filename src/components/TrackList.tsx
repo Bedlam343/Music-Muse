@@ -5,6 +5,8 @@ type TrackListProps = {
 };
 
 const TrackList = ({ tracks }: TrackListProps) => {
+  const handleLikeClick = (trackId: string) => {};
+
   return (
     <div className="flex justify-center gap-[30px] max-w-[900px] flex-wrap">
       {tracks.map((track, index) => (
@@ -14,7 +16,7 @@ const TrackList = ({ tracks }: TrackListProps) => {
             opacity: 0,
             animationDelay: `${0.1 * index}s`,
           }}
-          className="animate-appear flex flex-col gap-[10px]"
+          className="animate-appear flex flex-col items-center gap-[20px]"
         >
           <a
             href={track.external_urls.spotify}
@@ -52,6 +54,12 @@ const TrackList = ({ tracks }: TrackListProps) => {
               </p>
             </div>
           </a>
+
+          <img
+            onClick={() => handleLikeClick(track.id)}
+            className="w-[20px] h-[20px] hover:cursor-pointer"
+            src="src/assets/spotify/like_icon_like.png"
+          />
         </div>
       ))}
     </div>

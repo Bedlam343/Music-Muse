@@ -8,7 +8,13 @@ import {
   Track,
 } from 'src/utils/types';
 import TrackList from 'src/components/TrackList';
-import useSpotify from 'src/hooks/useSpotify';
+import {
+  searchTrack,
+  handleSpotifyCallback,
+  redirectToSpotify,
+} from 'src/service';
+
+window.onload = handleSpotifyCallback;
 
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string;
 const SPOTIFY_CLIENT_SECRET = import.meta.env
@@ -35,16 +41,17 @@ const DUMMY_LIST = [
 ];
 
 function App() {
-  const [spotifyAccessToken, setSpotifyAccessToken] = useState<string>('');
+  const [accessTokens, setAccessTokens] = useState({
+    client: '',
+    user: '',
+  });
   const [parameters, setParameters] = useState<Parameters>({
     ...DEFAULT_PARAMETERS,
   });
   const [tracks, setTracks] = useState<Track[]>([]);
 
-  const { searchTrack } = useSpotify(spotifyAccessToken);
-
   useEffect(() => {
-    const getAccessToken = async () => {
+    const getClientAccessToken = async () => {
       const response = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {
@@ -57,11 +64,28 @@ function App() {
       });
 
       const data = await response.json();
-      setSpotifyAccessToken(data.access_token as string);
+      setAccessTokens((prevTokens) => ({
+        ...prevTokens,
+        client: data.access_token as string,
+      }));
     };
 
-    if (!spotifyAccessToken) getAccessToken();
-  }, [spotifyAccessToken]);
+    getClientAccessToken();
+  }, []);
+
+  // restore state atfer redirect
+  useEffect(() => {
+    const stateStr = localStorage.getItem('state');
+    if (!stateStr) return;
+
+    const state: { parameters: Parameters; tracks: Track[] } =
+      JSON.parse(stateStr);
+    setTracks(state.tracks);
+    setParameters(state.parameters);
+
+    localStorage.removeItem('state');
+    localStorage.removeItem('spotify_code_verifier');
+  }, []);
 
   const handleParameterChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const parameter = event.target.id as keyof Parameters;
@@ -72,19 +96,33 @@ function App() {
   };
 
   const handleRecommend = async () => {
+    if (!accessTokens.client) return;
+
     const promises = DUMMY_LIST.map((entry) => {
       const [trackname, artistname] = entry.split(',');
-      return searchTrack(trackname, artistname);
+      return searchTrack(trackname, artistname, accessTokens.client);
     });
 
     const newTracks = await Promise.all(promises);
-    console.log(newTracks);
     setTracks(newTracks.filter((track) => Boolean(track)) as Track[]);
+  };
+
+  const handleSpotifyConnect = () => {
+    redirectToSpotify({ parameters, tracks });
   };
 
   return (
     <div className="pt-[20px] pb-[20px] flex flex-col items-center bg-stone-800">
-      <p className="text-4xl text-center text-stone-200">Music Muse</p>
+      <div className="flex flex-col items-center gap-[20px]">
+        <p className="text-4xl text-center text-stone-200">Music Muse</p>
+        <button
+          onClick={handleSpotifyConnect}
+          className="w-[125px] border-2 border-[#1DB954] text-[#1DB954] text-sm rounded-md 
+          px-2 py-1"
+        >
+          Connect Spotify
+        </button>
+      </div>
 
       <div className="mt-[40px] flex flex-col gap-[35px] mb-[50px]">
         <div className="flex flex-col gap-[20px]">

@@ -1,7 +1,7 @@
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string;
 import { REDIRECT_URI } from 'src/utils/constants';
 import { generateCodeChallenge, generateCodeVerifier } from 'src/utils/helpers';
-import { Parameters, Track } from 'src/utils/types';
+import { Parameters, Track, User } from 'src/utils/types';
 
 export const searchTrack = async (
   trackName: string,
@@ -103,8 +103,31 @@ export const handleSpotifyCallback = async () => {
     const body = await fetch('https://accounts.spotify.com/api/token', payload);
     const response = await body.json();
 
-    localStorage.setItem('user_access_token', response.access_token);
+    return response.access_token as string;
   } else {
-    console.log('No code or codeVerifier');
+    console.warn('No code or codeVerifier');
+    return undefined;
+  }
+};
+
+export const fetchCurrentUser = async (
+  accessToken: string
+): Promise<User | undefined> => {
+  try {
+    const response = await fetch('https://api.spotify.com/v1/me', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      return undefined;
+    }
+
+    const data = await response.json();
+    return data as User;
+  } catch (error) {
+    console.error(error);
+    return undefined;
   }
 };

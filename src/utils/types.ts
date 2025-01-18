@@ -73,3 +73,14 @@ export type Track = {
     spotify: string;
   };
 };
+
+export type User = {
+  display_name: string;
+  email: string;
+  id: string;
+  images: {
+    url: string;
+    height: 300;
+    width: 300;
+  }[];
+};

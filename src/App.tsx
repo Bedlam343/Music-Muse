@@ -6,19 +6,19 @@ import {
   Mood,
   Activity,
   Track,
+  User,
 } from 'src/utils/types';
 import TrackList from 'src/components/TrackList';
 import {
   searchTrack,
   handleSpotifyCallback,
   redirectToSpotify,
+  fetchCurrentUser,
 } from 'src/service';
 import Link from 'src/icons/Link';
 import Tooltip from 'src/components/common/Tooltip';
 import Parameters from 'src/components/Parameters';
 import Modal from 'src/components/common/Modal';
-
-window.onload = handleSpotifyCallback;
 
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string;
 const SPOTIFY_CLIENT_SECRET = import.meta.env
@@ -45,6 +45,7 @@ const DUMMY_LIST = [
 ];
 
 function App() {
+  const [currentUser, setCurrentUser] = useState<User>();
   const [parameters, setParameters] = useState<ParametersType>({
     ...DEFAULT_PARAMETERS,
   });
@@ -53,7 +54,25 @@ function App() {
   const [displayConnectModal, setDisplayConnectModal] =
     useState<boolean>(false);
 
+  console.log(currentUser);
+
+  // on initial window load
   useEffect(() => {
+    const getUserInformation = async () => {
+      // also check expiration date?
+      let userAccessToken =
+        localStorage.getItem('user_access_token') || undefined;
+      if (!userAccessToken) {
+        userAccessToken = await handleSpotifyCallback();
+      }
+
+      if (userAccessToken) {
+        localStorage.setItem('user_access_token', userAccessToken);
+        const user = await fetchCurrentUser(userAccessToken);
+        if (user) setCurrentUser(user);
+      }
+    };
+
     const getClientAccessToken = async () => {
       const response = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
@@ -70,11 +89,9 @@ function App() {
       localStorage.setItem('client_access_token', data.access_token);
     };
 
+    getUserInformation();
     getClientAccessToken();
-  }, []);
 
-  // restore state atfer redirect
-  useEffect(() => {
     const stateStr = localStorage.getItem('state');
     if (!stateStr) return;
 
@@ -113,11 +130,10 @@ function App() {
 
   const handleLikeTrack = (trackId: string) => {
     const user_access_token = localStorage.getItem('user_access_token');
-    if (!user_access_token) {
+    if (!user_access_token || user_access_token === 'undefined') {
       setDisplayConnectModal(true);
       return;
     }
-    console.log(trackId);
   };
 
   const renderSpotifyConnectModal = () => {

@@ -195,9 +195,30 @@ function App() {
             src="src/assets/spotify/full_logo_green.png"
             className="w-[150px] "
           />
-          <Tooltip text="Link Spotify Account" position="bottom">
-            <Link onClick={handleSpotifyConnect} />
-          </Tooltip>
+          {currentUser ? (
+            <div
+              className="mt-[5px] flex items-end gap-[5px] 
+              group"
+            >
+              <a
+                href={currentUser.external_urls.spotify}
+                target="_blank"
+                className="text-stone-300 group-hover:cursor-pointer 
+                group-hover:border-b-[1px] border-b-spotifyGreen"
+              >
+                Linked Account: {currentUser.display_name}
+              </a>
+              <img
+                src="src/assets/arrow_outward.png"
+                className="w-[15px] h-[15px] transform transition-transform 
+                duration-300 group-hover:-translate-y-2 ease-in-out"
+              />
+            </div>
+          ) : (
+            <Tooltip text="Link Spotify Account" position="bottom">
+              <Link onClick={handleSpotifyConnect} />
+            </Tooltip>
+          )}
         </div>
 
         <TrackList tracks={tracks} onLikeTrack={handleLikeTrack} />

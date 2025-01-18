@@ -78,6 +78,10 @@ export type User = {
   display_name: string;
   email: string;
   id: string;
+  href: string;
+  external_urls: {
+    spotify: string;
+  };
   images: {
     url: string;
     height: 300;

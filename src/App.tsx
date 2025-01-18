@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import {
-  Parameters,
+  Parameters as ParametersType,
   Genre,
   TimeOfDay,
   Mood,
@@ -15,6 +15,7 @@ import {
 } from 'src/service';
 import Link from 'src/icons/Link';
 import Tooltip from 'src/components/common/Tooltip';
+import Parameters from './components/Parameters';
 
 window.onload = handleSpotifyCallback;
 
@@ -22,7 +23,7 @@ const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string;
 const SPOTIFY_CLIENT_SECRET = import.meta.env
   .VITE_SPOTIFY_CLIENT_SECRET as string;
 
-const DEFAULT_PARAMETERS: Parameters = {
+const DEFAULT_PARAMETERS: ParametersType = {
   genre: Genre['Hip-Hop'],
   timeOfDay: TimeOfDay.Morning,
   mood: Mood.Energetic,
@@ -47,7 +48,7 @@ function App() {
     client: '',
     user: '',
   });
-  const [parameters, setParameters] = useState<Parameters>({
+  const [parameters, setParameters] = useState<ParametersType>({
     ...DEFAULT_PARAMETERS,
   });
   const [tracks, setTracks] = useState<Track[]>([]);
@@ -80,7 +81,7 @@ function App() {
     const stateStr = localStorage.getItem('state');
     if (!stateStr) return;
 
-    const state: { parameters: Parameters; tracks: Track[] } =
+    const state: { parameters: ParametersType; tracks: Track[] } =
       JSON.parse(stateStr);
     setTracks(state.tracks);
     setParameters(state.parameters);
@@ -90,7 +91,7 @@ function App() {
   }, []);
 
   const handleParameterChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const parameter = event.target.id as keyof Parameters;
+    const parameter = event.target.id as keyof ParametersType;
     setParameters((prevParameters) => ({
       ...prevParameters,
       [parameter]: event.target.value,
@@ -113,6 +114,14 @@ function App() {
     redirectToSpotify({ parameters, tracks });
   };
 
+  const handleLikeTrack = (trackId: string) => {
+    const user_access_token = localStorage.getItem('user_access_token');
+    if (!user_access_token) {
+      return;
+    }
+    console.log(trackId);
+  };
+
   return (
     <div className="pt-[20px] pb-[20px] flex flex-col items-center bg-stone-800">
       <div className="flex flex-col items-center gap-[20px]">
@@ -120,44 +129,10 @@ function App() {
       </div>
 
       <div className="mt-[40px] flex flex-col gap-[35px] mb-[50px]">
-        <div className="flex flex-col gap-[20px]">
-          <select
-            id="genre"
-            value={parameters.genre}
-            onChange={handleParameterChange}
-          >
-            {Object.keys(Genre).map((genre) => (
-              <option key={genre}>{genre}</option>
-            ))}
-          </select>
-          <select
-            id="timeOfDay"
-            value={parameters.timeOfDay}
-            onChange={handleParameterChange}
-          >
-            {Object.keys(TimeOfDay).map((timeOfDay) => (
-              <option key={timeOfDay}>{timeOfDay}</option>
-            ))}
-          </select>
-          <select
-            id="mood"
-            value={parameters.mood}
-            onChange={handleParameterChange}
-          >
-            {Object.keys(Mood).map((mood) => (
-              <option key={mood}>{mood}</option>
-            ))}
-          </select>
-          <select
-            id="activity"
-            value={parameters.activity}
-            onChange={handleParameterChange}
-          >
-            {Object.keys(Activity).map((activity) => (
-              <option key={activity}>{activity}</option>
-            ))}
-          </select>
-        </div>
+        <Parameters
+          parameters={parameters}
+          onParameterChange={handleParameterChange}
+        />
 
         <button
           onClick={handleRecommend}
@@ -177,7 +152,7 @@ function App() {
         </Tooltip>
       </div>
 
-      <TrackList tracks={tracks} />
+      <TrackList tracks={tracks} onLikeTrack={handleLikeTrack} />
     </div>
   );
 }

@@ -3,10 +3,13 @@ import Tooltip from 'src/components/common/Tooltip';
 
 type TrackListProps = {
   tracks: Track[];
+  onLikeTrack: (trackId: string) => void;
 };
 
-const TrackList = ({ tracks }: TrackListProps) => {
-  const handleLikeClick = (trackId: string) => {};
+const TrackList = ({ tracks, onLikeTrack }: TrackListProps) => {
+  const handleLikeClick = (trackId: string) => {
+    onLikeTrack(trackId);
+  };
 
   if (tracks.length === 0) return null;
 

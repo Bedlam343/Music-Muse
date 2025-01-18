@@ -3,6 +3,9 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      colors: {
+        spotifyGreen: '#1DB954',
+      },
       keyframes: {
         appear: {
           '0%': { opacity: 0 },

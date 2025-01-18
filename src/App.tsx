@@ -15,7 +15,8 @@ import {
 } from 'src/service';
 import Link from 'src/icons/Link';
 import Tooltip from 'src/components/common/Tooltip';
-import Parameters from './components/Parameters';
+import Parameters from 'src/components/Parameters';
+import Modal from 'src/components/common/Modal';
 
 window.onload = handleSpotifyCallback;
 
@@ -44,14 +45,13 @@ const DUMMY_LIST = [
 ];
 
 function App() {
-  const [accessTokens, setAccessTokens] = useState({
-    client: '',
-    user: '',
-  });
   const [parameters, setParameters] = useState<ParametersType>({
     ...DEFAULT_PARAMETERS,
   });
   const [tracks, setTracks] = useState<Track[]>([]);
+
+  const [displayConnectModal, setDisplayConnectModal] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const getClientAccessToken = async () => {
@@ -67,10 +67,7 @@ function App() {
       });
 
       const data = await response.json();
-      setAccessTokens((prevTokens) => ({
-        ...prevTokens,
-        client: data.access_token as string,
-      }));
+      localStorage.setItem('client_access_token', data.access_token);
     };
 
     getClientAccessToken();
@@ -87,7 +84,6 @@ function App() {
     setParameters(state.parameters);
 
     localStorage.removeItem('state');
-    localStorage.removeItem('spotify_code_verifier');
   }, []);
 
   const handleParameterChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -99,11 +95,12 @@ function App() {
   };
 
   const handleRecommend = async () => {
-    if (!accessTokens.client) return;
+    const clientAccessToken = localStorage.getItem('client_access_token');
+    if (!clientAccessToken) return;
 
     const promises = DUMMY_LIST.map((entry) => {
       const [trackname, artistname] = entry.split(',');
-      return searchTrack(trackname, artistname, accessTokens.client);
+      return searchTrack(trackname, artistname, clientAccessToken);
     });
 
     const newTracks = await Promise.all(promises);
@@ -117,43 +114,81 @@ function App() {
   const handleLikeTrack = (trackId: string) => {
     const user_access_token = localStorage.getItem('user_access_token');
     if (!user_access_token) {
+      setDisplayConnectModal(true);
       return;
     }
     console.log(trackId);
   };
 
-  return (
-    <div className="pt-[20px] pb-[20px] flex flex-col items-center bg-stone-800">
-      <div className="flex flex-col items-center gap-[20px]">
-        <p className="text-4xl text-center text-stone-200">Music Muse</p>
-      </div>
-
-      <div className="mt-[40px] flex flex-col gap-[35px] mb-[50px]">
-        <Parameters
-          parameters={parameters}
-          onParameterChange={handleParameterChange}
-        />
-
-        <button
-          onClick={handleRecommend}
-          className="hover:cursor-pointer border-2 border-stone-400 rounded-md px-2 py-1"
+  const renderSpotifyConnectModal = () => {
+    if (displayConnectModal) {
+      return (
+        <Modal
+          open={displayConnectModal}
+          onClose={() => setDisplayConnectModal(false)}
         >
-          <p className="text-stone-300">Recommend</p>
-        </button>
+          <div
+            className="flex flex-col items-center gap-[15px] bg-stone-800 
+            max-w-[350px] px-6 py-4 rounded-lg"
+          >
+            <img
+              src="src/assets/spotify/full_logo_green.png"
+              className="w-[100px]"
+            />
+            <p className="text-stone-300">
+              Link Your Spotify Account To Save Songs
+            </p>
+            <button
+              onClick={handleSpotifyConnect}
+              className="text-spotifyGreen border-[1px] border-spotifyGreen 
+              rounded-md px-2 py-1 w-[75px]"
+            >
+              Link
+            </button>
+          </div>
+        </Modal>
+      );
+    }
+
+    return null;
+  };
+
+  return (
+    <>
+      <div className="pt-[20px] pb-[20px] flex flex-col items-center bg-stone-800">
+        <div className="flex flex-col items-center gap-[20px]">
+          <p className="text-4xl text-center text-stone-200">Music Muse</p>
+        </div>
+
+        <div className="mt-[40px] flex flex-col gap-[35px] mb-[50px]">
+          <Parameters
+            parameters={parameters}
+            onParameterChange={handleParameterChange}
+          />
+
+          <button
+            onClick={handleRecommend}
+            className="hover:cursor-pointer border-2 border-stone-400 rounded-md px-2 py-1"
+          >
+            <p className="text-stone-300">Recommend</p>
+          </button>
+        </div>
+
+        <div className="mb-[60px] flex flex-col items-center gap-[5px]">
+          <img
+            src="src/assets/spotify/full_logo_green.png"
+            className="w-[150px] "
+          />
+          <Tooltip text="Link Spotify Account" position="bottom">
+            <Link onClick={handleSpotifyConnect} />
+          </Tooltip>
+        </div>
+
+        <TrackList tracks={tracks} onLikeTrack={handleLikeTrack} />
       </div>
 
-      <div className="mb-[60px] flex flex-col items-center gap-[5px]">
-        <img
-          src="src/assets/spotify/full_logo_green.png"
-          className="w-[150px] "
-        />
-        <Tooltip text="Link Spotify Account" position="bottom">
-          <Link onClick={handleSpotifyConnect} />
-        </Tooltip>
-      </div>
-
-      <TrackList tracks={tracks} onLikeTrack={handleLikeTrack} />
-    </div>
+      {renderSpotifyConnectModal()}
+    </>
   );
 }
 

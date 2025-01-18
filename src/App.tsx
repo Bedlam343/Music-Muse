@@ -1,13 +1,5 @@
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
-import {
-  Parameters as ParametersType,
-  Genre,
-  TimeOfDay,
-  Mood,
-  Activity,
-  Track,
-  User,
-} from 'src/utils/types';
+import { Parameters as ParametersType, Track, User } from 'src/utils/types';
 import TrackList from 'src/components/TrackList';
 import {
   searchTrack,
@@ -17,34 +9,12 @@ import {
   getSongsLikedStatuses,
   saveTrack,
   removeTrack,
+  fetchClientAccessToken,
 } from 'src/service';
 import Parameters from 'src/components/Parameters';
 import Modal from 'src/components/common/Modal';
 import LinkSpotifyAccount from 'src/components/LinkSpotifyAccount';
-
-const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string;
-const SPOTIFY_CLIENT_SECRET = import.meta.env
-  .VITE_SPOTIFY_CLIENT_SECRET as string;
-
-const DEFAULT_PARAMETERS: ParametersType = {
-  genre: Genre['Hip-Hop'],
-  timeOfDay: TimeOfDay.Morning,
-  mood: Mood.Energetic,
-  activity: Activity.Workout,
-} as const;
-
-const DUMMY_LIST = [
-  'Softly,Karan Aujla',
-  'City Of Stars,Logic',
-  'No Face,Drake',
-  'Sorry Not Sorry,Bryson Tiller',
-  'Surround Sound,JID',
-  'El Pistolero,mgk',
-  'Not Like Us,Kendrick Lamar',
-  'Family Matters,Drake',
-  'Stealth Mode,J. Cole',
-  'GOD,Kendrick Lamar',
-];
+import { DEFAULT_PARAMETERS, DUMMY_RECOMMENDATIONS } from 'src/utils/constants';
 
 function App() {
   const [currentUser, setCurrentUser] = useState<User>();
@@ -80,19 +50,10 @@ function App() {
     };
 
     const getClientAccessToken = async () => {
-      const response = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${btoa(
-            `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
-          )}`,
-        },
-        body: 'grant_type=client_credentials',
-      });
-
-      const data = await response.json();
-      localStorage.setItem('client_access_token', data.access_token);
+      const clientAccessToken = await fetchClientAccessToken();
+      if (clientAccessToken) {
+        localStorage.setItem('client_access_token', clientAccessToken);
+      }
     };
 
     getUserInformation();
@@ -146,7 +107,7 @@ function App() {
     const clientAccessToken = localStorage.getItem('client_access_token');
     if (!clientAccessToken) return;
 
-    const promises = DUMMY_LIST.map((entry) => {
+    const promises = DUMMY_RECOMMENDATIONS.map((entry) => {
       const [trackname, artistname] = entry.split(',');
       return searchTrack(trackname, artistname, clientAccessToken);
     });

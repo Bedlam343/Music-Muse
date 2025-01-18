@@ -1,4 +1,7 @@
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string;
+const SPOTIFY_CLIENT_SECRET = import.meta.env
+  .VITE_SPOTIFY_CLIENT_SECRET as string;
+
 import {
   REDIRECT_URI,
   SPOTIFY_AUTH_SCOPE,
@@ -161,6 +164,33 @@ export const handleSpotifyCallback = async () => {
     return response.access_token as string;
   } else {
     console.warn('No code or codeVerifier');
+    return undefined;
+  }
+};
+
+export const fetchClientAccessToken = async () => {
+  try {
+    const response = await fetch(`${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Basic ${btoa(
+          `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
+        )}`,
+      },
+      body: 'grant_type=client_credentials',
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Error fetching client access token: ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    return data.access_token as string;
+  } catch (error) {
+    console.error(error);
     return undefined;
   }
 };

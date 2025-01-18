@@ -13,6 +13,8 @@ import {
   handleSpotifyCallback,
   redirectToSpotify,
 } from 'src/service';
+import Link from 'src/icons/Link';
+import Tooltip from 'src/components/common/Tooltip';
 
 window.onload = handleSpotifyCallback;
 
@@ -115,13 +117,6 @@ function App() {
     <div className="pt-[20px] pb-[20px] flex flex-col items-center bg-stone-800">
       <div className="flex flex-col items-center gap-[20px]">
         <p className="text-4xl text-center text-stone-200">Music Muse</p>
-        <button
-          onClick={handleSpotifyConnect}
-          className="w-[125px] border-2 border-[#1DB954] text-[#1DB954] text-sm rounded-md 
-          px-2 py-1"
-        >
-          Connect Spotify
-        </button>
       </div>
 
       <div className="mt-[40px] flex flex-col gap-[35px] mb-[50px]">
@@ -170,6 +165,16 @@ function App() {
         >
           <p className="text-stone-300">Recommend</p>
         </button>
+      </div>
+
+      <div className="mb-[60px] flex flex-col items-center gap-[5px]">
+        <img
+          src="src/assets/spotify/full_logo_green.png"
+          className="w-[150px] "
+        />
+        <Tooltip text="Link Spotify Account" position="bottom">
+          <Link onClick={handleSpotifyConnect} />
+        </Tooltip>
       </div>
 
       <TrackList tracks={tracks} />

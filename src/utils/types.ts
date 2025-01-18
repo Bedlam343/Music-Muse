@@ -72,6 +72,7 @@ export type Track = {
   external_urls: {
     spotify: string;
   };
+  likedByCurrentUser?: boolean;
 };
 
 export type User = {

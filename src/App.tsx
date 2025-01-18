@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Parameters as ParametersType,
   Genre,
@@ -14,11 +14,11 @@ import {
   handleSpotifyCallback,
   redirectToSpotify,
   fetchCurrentUser,
+  getSongsLikedStatuses,
 } from 'src/service';
-import Link from 'src/icons/Link';
-import Tooltip from 'src/components/common/Tooltip';
 import Parameters from 'src/components/Parameters';
 import Modal from 'src/components/common/Modal';
+import LinkSpotifyAccount from 'src/components/LinkSpotifyAccount';
 
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string;
 const SPOTIFY_CLIENT_SECRET = import.meta.env
@@ -50,9 +50,13 @@ function App() {
     ...DEFAULT_PARAMETERS,
   });
   const [tracks, setTracks] = useState<Track[]>([]);
-
   const [displayConnectModal, setDisplayConnectModal] =
     useState<boolean>(false);
+
+  const trackIds: string = useMemo(
+    () => tracks.map(({ id }) => id).join(','),
+    [tracks]
+  );
 
   console.log(currentUser);
 
@@ -103,6 +107,31 @@ function App() {
     localStorage.removeItem('state');
   }, []);
 
+  // fetch liked status of recommended songs
+  useEffect(() => {
+    const userAccessToken =
+      localStorage.getItem('user_access_token') ?? undefined;
+
+    if (tracks.length === 0 || !userAccessToken) return;
+
+    const getSongStatues = async () => {
+      const statuses = await getSongsLikedStatuses(
+        trackIds.split(','),
+        userAccessToken
+      );
+
+      setTracks((prevTracks) => {
+        const updatedTracks: Track[] = [...prevTracks];
+        statuses.forEach((status, index) => {
+          updatedTracks[index].likedByCurrentUser = status;
+        });
+        return updatedTracks;
+      });
+    };
+
+    getSongStatues();
+  }, [tracks.length, trackIds]);
+
   const handleParameterChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const parameter = event.target.id as keyof ParametersType;
     setParameters((prevParameters) => ({
@@ -120,8 +149,9 @@ function App() {
       return searchTrack(trackname, artistname, clientAccessToken);
     });
 
-    const newTracks = await Promise.all(promises);
-    setTracks(newTracks.filter((track) => Boolean(track)) as Track[]);
+    const foundTracks = await Promise.all(promises);
+    const newTracks = foundTracks.filter((track) => Boolean(track)) as Track[];
+    setTracks(newTracks);
   };
 
   const handleSpotifyConnect = () => {
@@ -135,6 +165,8 @@ function App() {
       return;
     }
   };
+
+  const handleUnlikeTrack = (trackId: string) => {};
 
   const renderSpotifyConnectModal = () => {
     if (displayConnectModal) {
@@ -190,38 +222,17 @@ function App() {
           </button>
         </div>
 
-        <div className="mb-[60px] flex flex-col items-center gap-[5px]">
-          <img
-            src="src/assets/spotify/full_logo_green.png"
-            className="w-[150px] "
-          />
-          {currentUser ? (
-            <div
-              className="mt-[5px] flex items-end gap-[5px] 
-              group"
-            >
-              <a
-                href={currentUser.external_urls.spotify}
-                target="_blank"
-                className="text-stone-300 group-hover:cursor-pointer 
-                group-hover:border-b-[1px] border-b-spotifyGreen"
-              >
-                Linked Account: {currentUser.display_name}
-              </a>
-              <img
-                src="src/assets/arrow_outward.png"
-                className="w-[15px] h-[15px] transform transition-transform 
-                duration-300 group-hover:-translate-y-2 ease-in-out"
-              />
-            </div>
-          ) : (
-            <Tooltip text="Link Spotify Account" position="bottom">
-              <Link onClick={handleSpotifyConnect} />
-            </Tooltip>
-          )}
-        </div>
+        <LinkSpotifyAccount
+          accountId={currentUser?.id}
+          accountLink={currentUser?.external_urls.spotify}
+          handleConnect={handleSpotifyConnect}
+        />
 
-        <TrackList tracks={tracks} onLikeTrack={handleLikeTrack} />
+        <TrackList
+          tracks={tracks}
+          onLikeTrack={handleLikeTrack}
+          onUnlikeTrack={handleUnlikeTrack}
+        />
       </div>
 
       {renderSpotifyConnectModal()}

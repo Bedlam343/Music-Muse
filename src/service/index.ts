@@ -1,5 +1,10 @@
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string;
-import { REDIRECT_URI } from 'src/utils/constants';
+import {
+  REDIRECT_URI,
+  SPOTIFY_AUTH_SCOPE,
+  SPOTIFY_ACCOUNTS_BASE_URL,
+  SPOTIFY_API_BASE_URL,
+} from 'src/utils/constants';
 import { generateCodeChallenge, generateCodeVerifier } from 'src/utils/helpers';
 import { Parameters, Track, User } from 'src/utils/types';
 
@@ -12,7 +17,7 @@ export const searchTrack = async (
 
   try {
     const response = await fetch(
-      `https://api.spotify.com/v1/search?q=${query}&type=track&limit=3`,
+      `${SPOTIFY_API_BASE_URL}/search?q=${query}&type=track&limit=3`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -35,14 +40,11 @@ export const searchTrack = async (
 
 export const getTrack = async (trackId: string, accessToken: string) => {
   try {
-    const response = await fetch(
-      `https://api.spotify.com/v1/tracks/${trackId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+    const response = await fetch(`${SPOTIFY_API_BASE_URL}/tracks/${trackId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
@@ -58,8 +60,7 @@ export const redirectToSpotify = async (state: {
   parameters: Parameters;
   tracks: Track[];
 }) => {
-  const SCOPE = 'user-read-private user-read-email';
-  const AUTH_URL = new URL('https://accounts.spotify.com/authorize');
+  const AUTH_URL = new URL(`${SPOTIFY_ACCOUNTS_BASE_URL}/authorize`);
 
   const codeVerifier = generateCodeVerifier(64);
   localStorage.setItem('spotify_code_verifier', codeVerifier);
@@ -69,7 +70,7 @@ export const redirectToSpotify = async (state: {
   const params = {
     response_type: 'code',
     client_id: SPOTIFY_CLIENT_ID,
-    scope: SCOPE,
+    scope: SPOTIFY_AUTH_SCOPE,
     code_challenge_method: 'S256',
     code_challenge: codeChallenge,
     redirect_uri: REDIRECT_URI,
@@ -100,7 +101,7 @@ export const handleSpotifyCallback = async () => {
       }),
     };
 
-    const body = await fetch('https://accounts.spotify.com/api/token', payload);
+    const body = await fetch(`${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`, payload);
     const response = await body.json();
 
     return response.access_token as string;
@@ -114,7 +115,7 @@ export const fetchCurrentUser = async (
   accessToken: string
 ): Promise<User | undefined> => {
   try {
-    const response = await fetch('https://api.spotify.com/v1/me', {
+    const response = await fetch(`${SPOTIFY_API_BASE_URL}/me`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -129,5 +130,37 @@ export const fetchCurrentUser = async (
   } catch (error) {
     console.error(error);
     return undefined;
+  }
+};
+
+export const getSongsLikedStatuses = async (
+  trackIds: string[],
+  userAccessToken: string
+) => {
+  if (!userAccessToken) {
+    console.error('No user access token!');
+    return [];
+  }
+
+  try {
+    const idsParam = trackIds.join(',');
+    const response = await fetch(
+      `${SPOTIFY_API_BASE_URL}/me/tracks/contains?ids=${idsParam}`,
+      {
+        headers: {
+          Authorization: `Bearer ${userAccessToken}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error checking liked status: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data as boolean[];
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 };

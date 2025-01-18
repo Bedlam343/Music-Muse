@@ -4,11 +4,16 @@ import Tooltip from 'src/components/common/Tooltip';
 type TrackListProps = {
   tracks: Track[];
   onLikeTrack: (trackId: string) => void;
+  onUnlikeTrack: (trackId: string) => void;
 };
 
-const TrackList = ({ tracks, onLikeTrack }: TrackListProps) => {
-  const handleLikeClick = (trackId: string) => {
-    onLikeTrack(trackId);
+const TrackList = ({ tracks, onLikeTrack, onUnlikeTrack }: TrackListProps) => {
+  const handleIconClick = (trackId: string, liked: boolean) => {
+    if (liked) {
+      onUnlikeTrack(trackId);
+    } else {
+      onLikeTrack(trackId);
+    }
   };
 
   if (tracks.length === 0) return null;
@@ -70,9 +75,15 @@ const TrackList = ({ tracks, onLikeTrack }: TrackListProps) => {
 
             <Tooltip text="Add to Liked Songs">
               <img
-                onClick={() => handleLikeClick(track.id)}
+                onClick={() =>
+                  handleIconClick(track.id, Boolean(track.likedByCurrentUser))
+                }
                 className="w-[20px] h-[20px] hover:cursor-pointer"
-                src="src/assets/spotify/like_icon_like.png"
+                src={`src/assets/spotify/${
+                  track.likedByCurrentUser
+                    ? 'like_icon_liked.png'
+                    : 'like_icon_like.png'
+                }`}
               />
             </Tooltip>
           </div>

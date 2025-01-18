@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import {
   Parameters as ParametersType,
   Genre,
@@ -15,6 +15,8 @@ import {
   redirectToSpotify,
   fetchCurrentUser,
   getSongsLikedStatuses,
+  saveTrack,
+  removeTrack,
 } from 'src/service';
 import Parameters from 'src/components/Parameters';
 import Modal from 'src/components/common/Modal';
@@ -158,15 +160,41 @@ function App() {
     redirectToSpotify({ parameters, tracks });
   };
 
-  const handleLikeTrack = (trackId: string) => {
+  const handleLikeTrack = async (trackId: string) => {
     const user_access_token = localStorage.getItem('user_access_token');
     if (!user_access_token || user_access_token === 'undefined') {
       setDisplayConnectModal(true);
       return;
     }
+
+    const success = await saveTrack(trackId, user_access_token);
+
+    if (success) {
+      setTracks((prevTracks) => {
+        const updatedTracks = [...prevTracks];
+        updatedTracks.find(
+          (track) => track.id === trackId
+        )!.likedByCurrentUser = true;
+        return updatedTracks;
+      });
+    }
   };
 
-  const handleUnlikeTrack = (trackId: string) => {};
+  const handleUnlikeTrack = async (trackId: string) => {
+    const user_access_token = localStorage.getItem('user_access_token');
+    if (!user_access_token) return;
+
+    const success = await removeTrack(trackId, user_access_token);
+    if (success) {
+      setTracks((prevTracks) => {
+        const updatedTracks = [...prevTracks];
+        updatedTracks.find(
+          (track) => track.id === trackId
+        )!.likedByCurrentUser = false;
+        return updatedTracks;
+      });
+    }
+  };
 
   const renderSpotifyConnectModal = () => {
     if (displayConnectModal) {

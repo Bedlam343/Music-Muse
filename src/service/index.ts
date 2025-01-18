@@ -56,6 +56,60 @@ export const getTrack = async (trackId: string, accessToken: string) => {
   }
 };
 
+export const saveTrack = async (trackId: string, userAccessToken: string) => {
+  if (!userAccessToken) {
+    console.error('No user access token found!');
+    return false;
+  }
+
+  try {
+    const response = await fetch(`${SPOTIFY_API_BASE_URL}/me/tracks`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${userAccessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ids: [trackId] }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error saving track: ${response.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+export const removeTrack = async (trackId: string, userAccessToken: string) => {
+  if (!userAccessToken) {
+    console.error('No user access token found!');
+    return false;
+  }
+
+  try {
+    const response = await fetch(`${SPOTIFY_API_BASE_URL}/me/tracks`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${userAccessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ids: [trackId] }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error saving track: ${response.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
 export const redirectToSpotify = async (state: {
   parameters: Parameters;
   tracks: Track[];

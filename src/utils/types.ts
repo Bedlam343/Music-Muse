@@ -73,6 +73,7 @@ export type Track = {
     spotify: string;
   };
   likedByCurrentUser?: boolean;
+  likeStatusChangeTrigger?: number;
 };
 
 export type User = {

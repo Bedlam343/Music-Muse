@@ -26,7 +26,10 @@ const TrackList = ({ tracks, onLikeTrack, onUnlikeTrack }: TrackListProps) => {
         </p>
       </div>
 
-      <div className="flex justify-center gap-[30px] max-w-[900px] flex-wrap">
+      <div
+        className="flex justify-center gap-x-[30px] gap-y-[40px]
+        max-w-[900px] flex-wrap"
+      >
         {tracks.map((track, index) => (
           <Track
             track={track}

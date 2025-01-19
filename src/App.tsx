@@ -133,9 +133,15 @@ function App() {
     if (success) {
       setTracks((prevTracks) => {
         const updatedTracks = [...prevTracks];
-        updatedTracks.find(
-          (track) => track.id === trackId
-        )!.likedByCurrentUser = true;
+        const likedTrack = updatedTracks.find((track) => track.id === trackId);
+        if (likedTrack) {
+          likedTrack.likedByCurrentUser = true;
+          if (likedTrack.likeStatusChangeTrigger === undefined) {
+            likedTrack.likeStatusChangeTrigger = 0;
+          } else {
+            likedTrack.likeStatusChangeTrigger++;
+          }
+        }
         return updatedTracks;
       });
     }
@@ -149,9 +155,17 @@ function App() {
     if (success) {
       setTracks((prevTracks) => {
         const updatedTracks = [...prevTracks];
-        updatedTracks.find(
+        const unlikedTrack = updatedTracks.find(
           (track) => track.id === trackId
-        )!.likedByCurrentUser = false;
+        );
+        if (unlikedTrack) {
+          unlikedTrack.likedByCurrentUser = false;
+          if (unlikedTrack.likeStatusChangeTrigger === undefined) {
+            unlikedTrack.likeStatusChangeTrigger = 0;
+          } else {
+            unlikedTrack.likeStatusChangeTrigger++;
+          }
+        }
         return updatedTracks;
       });
     }

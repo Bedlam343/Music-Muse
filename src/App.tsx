@@ -10,11 +10,22 @@ import {
   saveTrack,
   removeTrack,
   fetchClientAccessToken,
+  getRefreshUserAccessToken,
 } from 'src/service';
 import Parameters from 'src/components/Parameters';
 import Modal from 'src/components/common/Modal';
 import LinkSpotifyAccount from 'src/components/LinkSpotifyAccount';
-import { DEFAULT_PARAMETERS, DUMMY_RECOMMENDATIONS } from 'src/utils/constants';
+import {
+  CLIENT_ACCESS_TOKEN,
+  CLIENT_EXPIRES_AT,
+  DEFAULT_PARAMETERS,
+  DUMMY_RECOMMENDATIONS,
+  USER_ACCESS_TOKEN,
+  USER_EXPIRES_AT,
+  USER_REFRESH_TOKEN,
+} from 'src/utils/constants';
+
+window.onload = handleSpotifyCallback;
 
 function App() {
   const [currentUser, setCurrentUser] = useState<User>();
@@ -35,24 +46,31 @@ function App() {
   // on initial window load
   useEffect(() => {
     const getUserInformation = async () => {
-      // also check expiration date?
-      let userAccessToken =
-        localStorage.getItem('user_access_token') || undefined;
-      if (!userAccessToken) {
-        userAccessToken = await handleSpotifyCallback();
+      const refreshToken = localStorage.getItem(USER_REFRESH_TOKEN);
+      const expiresAt = localStorage.getItem(USER_EXPIRES_AT);
+
+      if (expiresAt && refreshToken && Number(expiresAt) <= Date.now()) {
+        await getRefreshUserAccessToken(refreshToken);
       }
 
+      const userAccessToken = localStorage.getItem(USER_ACCESS_TOKEN);
+
       if (userAccessToken) {
-        localStorage.setItem('user_access_token', userAccessToken);
         const user = await fetchCurrentUser(userAccessToken);
         if (user) setCurrentUser(user);
       }
     };
 
-    const getClientAccessToken = async () => {
-      const clientAccessToken = await fetchClientAccessToken();
-      if (clientAccessToken) {
-        localStorage.setItem('client_access_token', clientAccessToken);
+    const getClientAccessToken = () => {
+      const clientAccessToken = localStorage.getItem(CLIENT_ACCESS_TOKEN);
+      const expiresAt = localStorage.getItem(CLIENT_EXPIRES_AT);
+
+      // fetch client access token if not token or previous one expired
+      if (
+        !clientAccessToken ||
+        (expiresAt && Number(expiresAt) <= Date.now())
+      ) {
+        fetchClientAccessToken();
       }
     };
 

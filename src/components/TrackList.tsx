@@ -32,6 +32,7 @@ const TrackList = ({ tracks, onLikeTrack, onUnlikeTrack }: TrackListProps) => {
       >
         {tracks.map((track, index) => (
           <Track
+            key={track.id}
             track={track}
             animationDelay={0.1 * index}
             onLikeIconClick={handleIconClick}

@@ -6,6 +6,12 @@ export const SPOTIFY_API_BASE_URL = 'https://api.spotify.com/v1';
 export const SPOTIFY_AUTH_SCOPE =
   'playlist-read-private user-library-modify user-library-read user-read-private user-read-email';
 
+export const CLIENT_ACCESS_TOKEN = 'client_access_token';
+export const CLIENT_EXPIRES_AT = 'client_expires_at';
+export const USER_ACCESS_TOKEN = 'user_access_token';
+export const USER_EXPIRES_AT = 'user_expires_at';
+export const USER_REFRESH_TOKEN = 'user_refresh_token';
+
 export const DEFAULT_PARAMETERS: Parameters = {
   genre: Genre['Hip-Hop'],
   timeOfDay: TimeOfDay.Morning,

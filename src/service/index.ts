@@ -7,6 +7,11 @@ import {
   SPOTIFY_AUTH_SCOPE,
   SPOTIFY_ACCOUNTS_BASE_URL,
   SPOTIFY_API_BASE_URL,
+  CLIENT_ACCESS_TOKEN,
+  CLIENT_EXPIRES_AT,
+  USER_ACCESS_TOKEN,
+  USER_EXPIRES_AT,
+  USER_REFRESH_TOKEN,
 } from 'src/utils/constants';
 import { generateCodeChallenge, generateCodeVerifier } from 'src/utils/helpers';
 import { Parameters, Track, User } from 'src/utils/types';
@@ -138,7 +143,37 @@ export const redirectToSpotify = async (state: {
   window.location.href = AUTH_URL.toString();
 };
 
+export const getRefreshUserAccessToken = async (refreshToken: string) => {
+  const url = `${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`;
+
+  const payload = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+      client_id: SPOTIFY_CLIENT_ID,
+    }),
+  };
+  const response = await fetch(url, payload);
+  const data = await response.json();
+  const { access_token, refresh_token, expires_in } = data;
+
+  localStorage.setItem('access_token', access_token);
+  if (refresh_token) {
+    localStorage.setItem('refresh_token', refresh_token);
+  }
+
+  const expiresAt = Date.now() + expires_in * 100;
+  localStorage.setItem(USER_EXPIRES_AT, expiresAt.toString());
+};
+
 export const handleSpotifyCallback = async () => {
+  const userAccessToken = localStorage.getItem(USER_ACCESS_TOKEN);
+  if (userAccessToken) return;
+
   const codeVerifier = localStorage.getItem('spotify_code_verifier');
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
@@ -158,13 +193,20 @@ export const handleSpotifyCallback = async () => {
       }),
     };
 
-    const body = await fetch(`${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`, payload);
-    const response = await body.json();
+    const response = await fetch(
+      `${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`,
+      payload
+    );
+    const data = await response.json();
 
-    return response.access_token as string;
+    const { access_token, refresh_token, expires_in } = data;
+    localStorage.setItem(USER_ACCESS_TOKEN, access_token);
+    localStorage.setItem(USER_REFRESH_TOKEN, refresh_token);
+
+    const expiresAt = Date.now() + expires_in * 100;
+    localStorage.setItem(USER_EXPIRES_AT, expiresAt.toString());
   } else {
     console.warn('No code or codeVerifier');
-    return undefined;
   }
 };
 
@@ -188,10 +230,14 @@ export const fetchClientAccessToken = async () => {
     }
 
     const data = await response.json();
-    return data.access_token as string;
+
+    const { access_token, expires_in } = data;
+    localStorage.setItem(CLIENT_ACCESS_TOKEN, access_token);
+
+    const expiresAt = Date.now() + expires_in * 100;
+    localStorage.setItem(CLIENT_EXPIRES_AT, expiresAt.toString());
   } catch (error) {
     console.error(error);
-    return undefined;
   }
 };
 

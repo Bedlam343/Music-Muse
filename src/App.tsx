@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Parameters as ParametersType, Track, User } from 'src/utils/types';
 import TrackList from 'src/components/TrackList';
@@ -36,6 +36,8 @@ function App() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [displayConnectModal, setDisplayConnectModal] =
     useState<boolean>(false);
+
+  const trackListRef = useRef<HTMLDivElement>(null);
 
   const trackIds: string = useMemo(
     () => tracks.map(({ id }) => id).join(','),
@@ -111,6 +113,10 @@ function App() {
 
     getSongStatues();
   }, [tracks.length, trackIds]);
+
+  useEffect(() => {
+    scrollToTracks();
+  }, [trackIds]);
 
   const handleParameterChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const parameter = event.target.id as keyof ParametersType;
@@ -215,6 +221,12 @@ function App() {
     return null;
   };
 
+  const scrollToTracks = () => {
+    if (trackListRef.current) {
+      trackListRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <>
       <div className="pt-[20px] pb-[20px] flex flex-col items-center bg-stone-800">
@@ -246,6 +258,7 @@ function App() {
         </div>
 
         <TrackList
+          ref={trackListRef}
           tracks={tracks}
           onLikeTrack={handleLikeTrack}
           onUnlikeTrack={handleUnlikeTrack}

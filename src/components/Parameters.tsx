@@ -41,7 +41,7 @@ const Parameters = ({
           value={parameters.timeOfDay}
           onChange={onParameterChange}
           id="timeOfDay"
-          label="Time Of Day"
+          label="Time of Day"
           options={Object.keys(TimeOfDay)}
         />
 

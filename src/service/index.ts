@@ -146,7 +146,6 @@ export const redirectToSpotify = async (state: {
 };
 
 export const getRefreshUserAccessToken = async (refreshToken: string) => {
-  console.log('refreshing token');
   const url = `${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`;
 
   const payload = {
@@ -177,9 +176,10 @@ export const handleSpotifyCallback = async () => {
   const userAccessToken = localStorage.getItem(USER_ACCESS_TOKEN);
   if (userAccessToken && userAccessToken !== 'undefined') return;
 
-  console.log('handle spotify callback');
-
   const codeVerifier = localStorage.getItem(SPOTIFY_CODE_VERIFIER);
+  // remove it right away, so won't fire second time due to react strict mode
+  localStorage.removeItem(SPOTIFY_CODE_VERIFIER);
+
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
 

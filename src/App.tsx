@@ -52,10 +52,10 @@ function App() {
       const refreshToken = localStorage.getItem(USER_REFRESH_TOKEN);
       const expiresAt = localStorage.getItem(USER_EXPIRES_AT);
 
-      if (expiresAt && refreshToken && Number(expiresAt) <= Date.now()) {
-        await getRefreshUserAccessToken(refreshToken);
-      } else {
+      if (!userAccessToken || userAccessToken === 'undefined') {
         await handleSpotifyCallback();
+      } else if (expiresAt && refreshToken && Number(expiresAt) <= Date.now()) {
+        await getRefreshUserAccessToken(refreshToken);
       }
 
       userAccessToken = localStorage.getItem(USER_ACCESS_TOKEN);

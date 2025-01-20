@@ -6,6 +6,7 @@ import {
   Mood,
   Activity,
 } from 'src/utils/types';
+import Select from 'src/components/Select';
 
 type ParametersProps = {
   parameters: ParametersType;
@@ -20,43 +21,45 @@ const Parameters = ({
 }: ParametersProps) => {
   return (
     <div className="flex flex-col items-center">
-      <p className="text-stone-400 text-lg mb-[20px]">
-        Tune Parameters and Go!
+      <p
+        className="text-stone-300 border-b-[1px] border-spotifyGreen 
+        text-lg mb-[25px]"
+      >
+        Parameters
       </p>
 
-      <div className="flex flex-col gap-[20px]">
-        <select
-          id="genre"
+      <div className="flex flex-col gap-[20px] w-[300px]">
+        <Select
           value={parameters.genre}
           onChange={onParameterChange}
-        >
-          {Object.keys(Genre).map((genre) => (
-            <option key={genre}>{genre}</option>
-          ))}
-        </select>
-        <select
-          id="timeOfDay"
+          id="genre"
+          label="Genre"
+          options={Object.keys(Genre)}
+        />
+
+        <Select
           value={parameters.timeOfDay}
           onChange={onParameterChange}
-        >
-          {Object.keys(TimeOfDay).map((timeOfDay) => (
-            <option key={timeOfDay}>{timeOfDay}</option>
-          ))}
-        </select>
-        <select id="mood" value={parameters.mood} onChange={onParameterChange}>
-          {Object.keys(Mood).map((mood) => (
-            <option key={mood}>{mood}</option>
-          ))}
-        </select>
-        <select
-          id="activity"
+          id="timeOfDay"
+          label="Time Of Day"
+          options={Object.keys(TimeOfDay)}
+        />
+
+        <Select
+          value={parameters.mood}
+          onChange={onParameterChange}
+          id="mood"
+          label="Mood"
+          options={Object.keys(Mood)}
+        />
+
+        <Select
           value={parameters.activity}
           onChange={onParameterChange}
-        >
-          {Object.keys(Activity).map((activity) => (
-            <option key={activity}>{activity}</option>
-          ))}
-        </select>
+          id="activity"
+          label="Activity"
+          options={Object.keys(Activity)}
+        />
       </div>
 
       <div className="w-full flex justify-center mt-[30px]">

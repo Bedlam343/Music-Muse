@@ -11,6 +11,7 @@ export const CLIENT_EXPIRES_AT = 'client_expires_at';
 export const USER_ACCESS_TOKEN = 'user_access_token';
 export const USER_EXPIRES_AT = 'user_expires_at';
 export const USER_REFRESH_TOKEN = 'user_refresh_token';
+export const SPOTIFY_CODE_VERIFIER = 'spotify_code_verifier';
 
 export const DEFAULT_PARAMETERS: Parameters = {
   genre: Genre['Hip-Hop'],

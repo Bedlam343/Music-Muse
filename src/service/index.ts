@@ -12,6 +12,7 @@ import {
   USER_ACCESS_TOKEN,
   USER_EXPIRES_AT,
   USER_REFRESH_TOKEN,
+  SPOTIFY_CODE_VERIFIER,
 } from 'src/utils/constants';
 import { generateCodeChallenge, generateCodeVerifier } from 'src/utils/helpers';
 import { Parameters, Track, User } from 'src/utils/types';
@@ -125,7 +126,8 @@ export const redirectToSpotify = async (state: {
   const AUTH_URL = new URL(`${SPOTIFY_ACCOUNTS_BASE_URL}/authorize`);
 
   const codeVerifier = generateCodeVerifier(64);
-  localStorage.setItem('spotify_code_verifier', codeVerifier);
+  localStorage.setItem(SPOTIFY_CODE_VERIFIER, codeVerifier);
+  console.log('setting code verifier');
 
   const codeChallenge = await generateCodeChallenge(codeVerifier);
 
@@ -164,7 +166,7 @@ export const getRefreshUserAccessToken = async (refreshToken: string) => {
 
   localStorage.setItem(USER_ACCESS_TOKEN, access_token);
   if (refresh_token) {
-    localStorage.setItem('refresh_token', refresh_token);
+    localStorage.setItem(USER_REFRESH_TOKEN, refresh_token);
   }
 
   const expiresAt = Date.now() + expires_in * 100;
@@ -177,7 +179,7 @@ export const handleSpotifyCallback = async () => {
 
   console.log('handle spotify callback');
 
-  const codeVerifier = localStorage.getItem('spotify_code_verifier');
+  const codeVerifier = localStorage.getItem(SPOTIFY_CODE_VERIFIER);
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
 

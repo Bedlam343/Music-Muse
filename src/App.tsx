@@ -26,8 +26,6 @@ import {
   USER_REFRESH_TOKEN,
 } from 'src/utils/constants';
 
-window.onload = handleSpotifyCallback;
-
 function App() {
   const [currentUser, setCurrentUser] = useState<User>();
   const [parameters, setParameters] = useState<ParametersType>({
@@ -37,7 +35,10 @@ function App() {
   const [displayConnectModal, setDisplayConnectModal] =
     useState<boolean>(false);
 
+  const [animteSpotifyLink, setAnimateSpotifyLink] = useState<boolean>(false);
+
   const trackListRef = useRef<HTMLDivElement>(null);
+  const linkSpotifyRef = useRef<HTMLDivElement>(null);
 
   const trackIds: string = useMemo(
     () => tracks.map(({ id }) => id).join(','),
@@ -47,14 +48,17 @@ function App() {
   // on initial window load
   useEffect(() => {
     const getUserInformation = async () => {
+      let userAccessToken = localStorage.getItem(USER_ACCESS_TOKEN);
       const refreshToken = localStorage.getItem(USER_REFRESH_TOKEN);
       const expiresAt = localStorage.getItem(USER_EXPIRES_AT);
 
       if (expiresAt && refreshToken && Number(expiresAt) <= Date.now()) {
         await getRefreshUserAccessToken(refreshToken);
+      } else {
+        await handleSpotifyCallback();
       }
 
-      const userAccessToken = localStorage.getItem(USER_ACCESS_TOKEN);
+      userAccessToken = localStorage.getItem(USER_ACCESS_TOKEN);
 
       if (userAccessToken) {
         const user = await fetchCurrentUser(userAccessToken);
@@ -87,6 +91,10 @@ function App() {
     setParameters(state.parameters);
 
     localStorage.removeItem('state');
+
+    return () => {
+      localStorage.removeItem(USER_ACCESS_TOKEN);
+    };
   }, []);
 
   // fetch liked status of recommended songs
@@ -118,6 +126,14 @@ function App() {
     scrollToTracks();
   }, [trackIds]);
 
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (animteSpotifyLink) {
+      timeout = setTimeout(() => setAnimateSpotifyLink(false), 2000);
+    }
+    return () => clearTimeout(timeout);
+  }, [animteSpotifyLink]);
+
   const handleParameterChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const parameter = event.target.id as keyof ParametersType;
     setParameters((prevParameters) => ({
@@ -147,7 +163,8 @@ function App() {
   const handleLikeTrack = async (trackId: string) => {
     const user_access_token = localStorage.getItem(USER_ACCESS_TOKEN);
     if (!user_access_token || user_access_token === 'undefined') {
-      setDisplayConnectModal(true);
+      scrollToSpotifyLink();
+      setAnimateSpotifyLink(true);
       return;
     }
 
@@ -227,6 +244,15 @@ function App() {
     }
   };
 
+  const scrollToSpotifyLink = () => {
+    if (linkSpotifyRef.current) {
+      linkSpotifyRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  };
+
   return (
     <>
       <div className="pt-[20px] pb-[20px] flex flex-col items-center bg-stone-800">
@@ -249,11 +275,13 @@ function App() {
           />
         </div>
 
-        <div className="mt-[60px] mb-[60px]">
+        <div className="mt-[50px] mb-[50px]">
           <LinkSpotifyAccount
+            ref={linkSpotifyRef}
             accountId={currentUser?.id}
             accountLink={currentUser?.external_urls.spotify}
             handleConnect={handleSpotifyConnect}
+            animate={animteSpotifyLink}
           />
         </div>
 

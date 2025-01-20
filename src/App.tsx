@@ -42,8 +42,6 @@ function App() {
     [tracks]
   );
 
-  console.log(currentUser);
-
   // on initial window load
   useEffect(() => {
     const getUserInformation = async () => {
@@ -220,22 +218,23 @@ function App() {
   return (
     <>
       <div className="pt-[20px] pb-[20px] flex flex-col items-center bg-stone-800">
-        <div className="flex flex-col items-center gap-[20px]">
-          <p className="text-4xl text-center text-stone-200">Music Muse</p>
+        <div className="flex flex-col items-center">
+          <div className="flex items-center gap-[5px]">
+            <p className="text-spotifyGreen text-4xl">&#119070;</p>
+            <p className="text-4xl text-center text-stone-300">Music Muse</p>
+          </div>
+
+          <p className="italic text-spotifyGreen text-sm">
+            Find Music You Love
+          </p>
         </div>
 
-        <div className="mt-[40px] flex flex-col gap-[35px] mb-[50px]">
+        <div className="mt-[40px] mb-[50px]">
           <Parameters
             parameters={parameters}
             onParameterChange={handleParameterChange}
+            onRecommend={handleRecommend}
           />
-
-          <button
-            onClick={handleRecommend}
-            className="hover:cursor-pointer border-2 border-stone-400 rounded-md px-2 py-1"
-          >
-            <p className="text-stone-300">Recommend</p>
-          </button>
         </div>
 
         <LinkSpotifyAccount

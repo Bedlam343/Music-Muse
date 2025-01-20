@@ -13,7 +13,7 @@ const LinkSpotifyAccount = ({
   handleConnect,
 }: Props) => {
   return (
-    <div className="mb-[60px] flex flex-col items-center gap-[5px]">
+    <div className="flex flex-col items-center gap-[5px]">
       <img
         src="src/assets/spotify/full_logo_green.png"
         className="w-[150px] "

@@ -229,7 +229,7 @@ function App() {
           </p>
         </div>
 
-        <div className="mt-[40px] mb-[50px]">
+        <div className="mt-[40px]">
           <Parameters
             parameters={parameters}
             onParameterChange={handleParameterChange}
@@ -237,11 +237,13 @@ function App() {
           />
         </div>
 
-        <LinkSpotifyAccount
-          accountId={currentUser?.id}
-          accountLink={currentUser?.external_urls.spotify}
-          handleConnect={handleSpotifyConnect}
-        />
+        <div className="mt-[60px] mb-[60px]">
+          <LinkSpotifyAccount
+            accountId={currentUser?.id}
+            accountLink={currentUser?.external_urls.spotify}
+            handleConnect={handleSpotifyConnect}
+          />
+        </div>
 
         <TrackList
           tracks={tracks}

@@ -19,16 +19,19 @@ const TrackList = ({ tracks, onLikeTrack, onUnlikeTrack }: TrackListProps) => {
   if (tracks.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-[30px]">
-      <div className="px-3">
-        <p className="text-2xl text-stone-300 font-semibold">
+    <div className="flex flex-col gap-[30px] w-fit">
+      <div className="px-[20px] flex justify-center">
+        <p
+          className="w-fit text-2xl text-stone-300 font-semibold 
+          border-b-[2px] border-spotifyGreen"
+        >
           Recommended Tracks:
         </p>
       </div>
 
       <div
         className="flex justify-center gap-x-[30px] gap-y-[40px]
-        max-w-[900px] flex-wrap"
+        max-w-[900px] flex-wrap px-[20px]"
       >
         {tracks.map((track, index) => (
           <Track

@@ -144,6 +144,7 @@ export const redirectToSpotify = async (state: {
 };
 
 export const getRefreshUserAccessToken = async (refreshToken: string) => {
+  console.log('refreshing token');
   const url = `${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`;
 
   const payload = {
@@ -172,7 +173,9 @@ export const getRefreshUserAccessToken = async (refreshToken: string) => {
 
 export const handleSpotifyCallback = async () => {
   const userAccessToken = localStorage.getItem(USER_ACCESS_TOKEN);
-  if (userAccessToken) return;
+  if (userAccessToken && userAccessToken !== 'undefined') return;
+
+  console.log('handle spotify callback');
 
   const codeVerifier = localStorage.getItem('spotify_code_verifier');
   const urlParams = new URLSearchParams(window.location.search);

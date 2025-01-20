@@ -161,7 +161,7 @@ export const getRefreshUserAccessToken = async (refreshToken: string) => {
   const data = await response.json();
   const { access_token, refresh_token, expires_in } = data;
 
-  localStorage.setItem('access_token', access_token);
+  localStorage.setItem(USER_ACCESS_TOKEN, access_token);
   if (refresh_token) {
     localStorage.setItem('refresh_token', refresh_token);
   }

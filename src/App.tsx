@@ -90,7 +90,7 @@ function App() {
   // fetch liked status of recommended songs
   useEffect(() => {
     const userAccessToken =
-      localStorage.getItem('user_access_token') ?? undefined;
+      localStorage.getItem(USER_ACCESS_TOKEN) ?? undefined;
 
     if (tracks.length === 0 || !userAccessToken) return;
 
@@ -121,7 +121,7 @@ function App() {
   };
 
   const handleRecommend = async () => {
-    const clientAccessToken = localStorage.getItem('client_access_token');
+    const clientAccessToken = localStorage.getItem(CLIENT_ACCESS_TOKEN);
     if (!clientAccessToken) return;
 
     const promises = DUMMY_RECOMMENDATIONS.map((entry) => {
@@ -139,7 +139,7 @@ function App() {
   };
 
   const handleLikeTrack = async (trackId: string) => {
-    const user_access_token = localStorage.getItem('user_access_token');
+    const user_access_token = localStorage.getItem(USER_ACCESS_TOKEN);
     if (!user_access_token || user_access_token === 'undefined') {
       setDisplayConnectModal(true);
       return;
@@ -162,7 +162,7 @@ function App() {
   };
 
   const handleUnlikeTrack = async (trackId: string) => {
-    const user_access_token = localStorage.getItem('user_access_token');
+    const user_access_token = localStorage.getItem(USER_ACCESS_TOKEN);
     if (!user_access_token) return;
 
     const success = await removeTrack(trackId, user_access_token);

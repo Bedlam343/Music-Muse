@@ -1,4 +1,5 @@
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
 import { Parameters as ParametersType, Track, User } from 'src/utils/types';
 import TrackList from 'src/components/TrackList';
 import {
@@ -154,14 +155,11 @@ function App() {
         const likedTrack = updatedTracks.find((track) => track.id === trackId);
         if (likedTrack) {
           likedTrack.likedByCurrentUser = true;
-          if (likedTrack.likeStatusChangeTrigger === undefined) {
-            likedTrack.likeStatusChangeTrigger = 0;
-          } else {
-            likedTrack.likeStatusChangeTrigger++;
-          }
         }
         return updatedTracks;
       });
+
+      toast('Added to Liked Songs.');
     }
   };
 
@@ -178,14 +176,11 @@ function App() {
         );
         if (unlikedTrack) {
           unlikedTrack.likedByCurrentUser = false;
-          if (unlikedTrack.likeStatusChangeTrigger === undefined) {
-            unlikedTrack.likeStatusChangeTrigger = 0;
-          } else {
-            unlikedTrack.likeStatusChangeTrigger++;
-          }
         }
         return updatedTracks;
       });
+
+      toast('Removed From Liked Songs.');
     }
   };
 
@@ -257,6 +252,13 @@ function App() {
       </div>
 
       {renderSpotifyConnectModal()}
+
+      <ToastContainer
+        position="bottom-center"
+        autoClose={3000}
+        pauseOnHover={false}
+        hideProgressBar
+      />
     </>
   );
 }

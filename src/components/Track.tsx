@@ -1,6 +1,5 @@
 import { Track as TrackType } from 'src/utils/types';
 import Tooltip from 'src/components/common/Tooltip';
-import { useEffect, useState } from 'react';
 
 type TrackProps = {
   track: TrackType;
@@ -9,17 +8,6 @@ type TrackProps = {
 };
 
 const Track = ({ track, animationDelay, onLikeIconClick }: TrackProps) => {
-  const [displayStatusChange, setDisplayStatusChange] =
-    useState<boolean>(false);
-
-  useEffect(() => {
-    if (track.likeStatusChangeTrigger === undefined) return;
-    setDisplayStatusChange(true);
-    const timeout = setTimeout(() => setDisplayStatusChange(false), 3000);
-
-    return () => clearTimeout(timeout);
-  }, [track.likeStatusChangeTrigger]);
-
   return (
     <div
       key={track.id}
@@ -84,19 +72,6 @@ const Track = ({ track, animationDelay, onLikeIconClick }: TrackProps) => {
           }`}
         />
       </Tooltip>
-
-      {displayStatusChange && (
-        <div className="absolute h-[100%] flex items-center">
-          <div
-            className="text-stone-800 bg-stone-100 rounded px-2 py-1
-            text-[13px] border-1 border-stone-900 text-center"
-          >
-            {track.likedByCurrentUser
-              ? 'Added to Liked Songs.'
-              : 'Removed from Liked Songs.'}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

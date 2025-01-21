@@ -1,6 +1,6 @@
 import { Context } from '@netlify/functions';
 
-export default (request: Request, context: Context) => {
+export default async (request: Request, context: Context) => {
   const SPOTIFY_CLIENT_ID = process.env.CLIENT_ID as string;
   const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET as string;
   const SPOTIFY_ACCOUNTS_BASE_URL = process.env
@@ -8,7 +8,7 @@ export default (request: Request, context: Context) => {
 
   console.log('fetchClientAccessToken serverless function');
 
-  return fetch(`${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`, {
+  const response = await fetch(`${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -18,4 +18,10 @@ export default (request: Request, context: Context) => {
     },
     body: 'grant_type=client_credentials',
   });
+
+  if (!response.ok) {
+    console.log('NOT OK BRUH');
+  }
+
+  return response;
 };

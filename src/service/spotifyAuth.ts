@@ -1,6 +1,8 @@
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string;
 const SPOTIFY_CLIENT_SECRET = import.meta.env
   .VITE_SPOTIFY_CLIENT_SECRET as string;
+const IS_PRODUCTION = import.meta.env.MODE;
+const PRODUCTION_SERVER_URL = import.meta.env.SERVER_URL as string;
 
 import {
   REDIRECT_URI,
@@ -111,19 +113,24 @@ export const handleSpotifyCallback = async () => {
   }
 };
 
-// MAKE SERVERLESS
 export const fetchClientAccessToken = async () => {
   try {
-    const response = await fetch(`${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${btoa(
-          `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
-        )}`,
-      },
-      body: 'grant_type=client_credentials',
-    });
+    let response;
+
+    if (IS_PRODUCTION && PRODUCTION_SERVER_URL) {
+      response = await fetch(PRODUCTION_SERVER_URL);
+    } else {
+      response = await fetch(`${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Basic ${btoa(
+            `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
+          )}`,
+        },
+        body: 'grant_type=client_credentials',
+      });
+    }
 
     if (!response.ok) {
       throw new Error(

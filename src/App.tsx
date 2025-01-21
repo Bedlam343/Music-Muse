@@ -12,6 +12,7 @@ import {
   removeTrack,
   fetchClientAccessToken,
   getRefreshUserAccessToken,
+  // fetchTrackRecommendations,
 } from 'src/service';
 import Parameters from 'src/components/Parameters';
 import Modal from 'src/components/common/Modal';
@@ -66,7 +67,7 @@ function App() {
       }
     };
 
-    const getClientAccessToken = () => {
+    const getClientAccessToken = async () => {
       const clientAccessToken = localStorage.getItem(CLIENT_ACCESS_TOKEN);
       const expiresAt = localStorage.getItem(CLIENT_EXPIRES_AT);
 
@@ -75,7 +76,11 @@ function App() {
         !clientAccessToken ||
         (expiresAt && Number(expiresAt) <= Date.now())
       ) {
-        fetchClientAccessToken();
+        const data = await fetchClientAccessToken();
+        if (data) {
+          localStorage.setItem(CLIENT_ACCESS_TOKEN, data.clientAccessToken);
+          localStorage.setItem(CLIENT_EXPIRES_AT, data.expiresAt.toString());
+        }
       }
     };
 
@@ -145,6 +150,8 @@ function App() {
   const handleRecommend = async () => {
     const clientAccessToken = localStorage.getItem(CLIENT_ACCESS_TOKEN);
     if (!clientAccessToken) return;
+
+    // fetchTrackRecommendations(parameters);
 
     const promises = DUMMY_RECOMMENDATIONS.map((entry) => {
       const [trackname, artistname] = entry.split(',');

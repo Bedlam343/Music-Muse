@@ -1,4 +1,6 @@
-exports.handler = async () => {
+import { Context } from '@netlify/functions';
+
+export default (request: Request, context: Context) => {
   const SPOTIFY_CLIENT_ID = process.env.CLIENT_ID as string;
   const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET as string;
   const SPOTIFY_ACCOUNTS_BASE_URL = process.env

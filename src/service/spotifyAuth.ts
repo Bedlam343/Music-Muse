@@ -1,7 +1,7 @@
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string;
 const SPOTIFY_CLIENT_SECRET = import.meta.env
   .VITE_SPOTIFY_CLIENT_SECRET as string;
-const IS_PRODUCTION = import.meta.env.MODE;
+const MODE = import.meta.env.MODE;
 const PRODUCTION_SERVER_URL = import.meta.env.SERVER_URL as string;
 
 import {
@@ -117,8 +117,11 @@ export const fetchClientAccessToken = async () => {
   try {
     let response;
 
-    if (IS_PRODUCTION && PRODUCTION_SERVER_URL) {
-      response = await fetch(PRODUCTION_SERVER_URL);
+    console.log('mode', MODE);
+
+    if (MODE === 'production') {
+      console.log('calling serverless function');
+      response = await fetch('../.netlify/functions/fetchClientAccessToken');
     } else {
       response = await fetch(`${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`, {
         method: 'POST',

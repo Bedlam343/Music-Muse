@@ -2,7 +2,6 @@ const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string;
 const SPOTIFY_CLIENT_SECRET = import.meta.env
   .VITE_SPOTIFY_CLIENT_SECRET as string;
 const MODE = import.meta.env.MODE;
-const PRODUCTION_SERVER_URL = import.meta.env.SERVER_URL as string;
 
 import {
   REDIRECT_URI,

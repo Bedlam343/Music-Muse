@@ -205,6 +205,14 @@ function App() {
     }
   };
 
+  const handleSpotifyUnlink = () => {
+    setCurrentUser(undefined);
+    localStorage.removeItem(USER_ACCESS_TOKEN);
+    localStorage.removeItem(USER_REFRESH_TOKEN);
+    localStorage.removeItem(USER_EXPIRES_AT);
+    toast('Spotify Account Unlinked', { position: 'top-center' });
+  };
+
   const renderSpotifyConnectModal = () => {
     if (displayConnectModal) {
       return (
@@ -282,6 +290,7 @@ function App() {
             accountLink={currentUser?.external_urls.spotify}
             handleConnect={handleSpotifyConnect}
             animate={animteSpotifyLink}
+            onSpotifyUnlink={handleSpotifyUnlink}
           />
         </div>
 

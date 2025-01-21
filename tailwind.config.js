@@ -13,9 +13,15 @@ export default {
             opacity: 1,
           },
         },
+        blinkBorder: {
+          '0%': { borderColor: 'transparent' },
+          '50%': { borderColor: '#1DB954' },
+          '100%': { borderColor: 'transparent' },
+        },
       },
       animation: {
         appear: 'appear 0.4s forwards ease-in',
+        'blink-border': 'blinkBorder 1.5s 5',
       },
     },
   },

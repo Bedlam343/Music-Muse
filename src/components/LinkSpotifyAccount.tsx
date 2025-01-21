@@ -156,7 +156,9 @@ const LinkSpotifyAccount = forwardRef(
         <div
           ref={ref}
           className={`flex flex-col items-center gap-[10px] px-4 py-3 
-          rounded-lg ${animate ? '' : ''}`}
+          rounded-lg border-2 border-transparent ${
+            animate ? 'animate-blink-border' : ''
+          }`}
         >
           <img
             src="src/assets/spotify/full_logo_green.png"

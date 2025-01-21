@@ -129,7 +129,7 @@ function App() {
   useEffect(() => {
     let timeout: NodeJS.Timeout;
     if (animteSpotifyLink) {
-      timeout = setTimeout(() => setAnimateSpotifyLink(false), 2000);
+      timeout = setTimeout(() => setAnimateSpotifyLink(false), 8000);
     }
     return () => clearTimeout(timeout);
   }, [animteSpotifyLink]);
@@ -165,6 +165,7 @@ function App() {
     if (!user_access_token || user_access_token === 'undefined') {
       scrollToSpotifyLink();
       setAnimateSpotifyLink(true);
+      toast('Link Spotify Account to Save Tracks', { position: 'top-center' });
       return;
     }
 

@@ -23,7 +23,7 @@ const Parameters = ({
     <div className="flex flex-col items-center">
       <p
         className="text-stone-300 border-b-[1px] border-spotifyGreen 
-        text-lg mb-[25px]"
+        text-[18px] mb-[25px]"
       >
         Parameters
       </p>

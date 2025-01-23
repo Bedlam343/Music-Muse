@@ -78,7 +78,7 @@ const LinkSpotifyAccount = forwardRef(
                   <span className="text-stone-300  ">{accountId}</span>
                 </a>
                 <img
-                  src="src/assets/arrow_outward.png"
+                  src="/arrow_outward.png"
                   className="w-[15px] h-[15px] transform transition-transform 
         duration-300 group-hover:-translate-y-2 ease-in-out"
                 />
@@ -160,10 +160,7 @@ const LinkSpotifyAccount = forwardRef(
             animate ? 'animate-blink-border' : ''
           }`}
         >
-          <img
-            src="src/assets/spotify/full_logo_green.png"
-            className="w-[150px] "
-          />
+          <img src="/spotify/full_logo_green.png" className="w-[150px] " />
           {accountId ? (
             <div className="flex flex-col items-center gap-[10px]">
               <div
@@ -181,7 +178,7 @@ const LinkSpotifyAccount = forwardRef(
                   <span className="text-stone-300">{accountId}</span>
                 </a>
                 <img
-                  src="src/assets/arrow_outward.png"
+                  src="/arrow_outward.png"
                   className="w-[15px] h-[15px] transform transition-transform 
         duration-300 group-hover:-translate-y-2 ease-in-out"
                 />

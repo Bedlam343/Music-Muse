@@ -120,12 +120,11 @@ export const fetchClientAccessToken = async () => {
     const expires = localStorage.getItem(CLIENT_EXPIRES_AT);
 
     // already have token and is not expired
-    if (clientAcessToken && expires && Number(expires) <= Date.now()) return;
+    if (clientAcessToken && expires && Number(expires) >= Date.now()) return;
 
     let response;
 
     if (MODE === 'production') {
-      console.log('calling serverless function');
       response = await fetch('/.netlify/functions/fetchClientAccessToken');
     } else {
       response = await fetch(`${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`, {

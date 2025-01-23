@@ -214,10 +214,7 @@ function App() {
             className="flex flex-col items-center gap-[15px] bg-stone-800 
             max-w-[350px] px-6 py-4 rounded-lg"
           >
-            <img
-              src="src/assets/spotify/full_logo_green.png"
-              className="w-[100px]"
-            />
+            <img src="/spotify/full_logo_green.png" className="w-[100px]" />
             <p className="text-stone-300">
               Link Your Spotify Account To Save Songs
             </p>

@@ -24,16 +24,10 @@ const Track = ({ track, animationDelay, onLikeIconClick }: TrackProps) => {
         className="flex flex-col items-center w-[150px] gap-[10px] group"
       >
         <div className="flex w-full justify-between">
-          <img
-            className="w-[90px]"
-            src="src/assets/spotify/full_logo_white.png"
-          />
+          <img className="w-[90px]" src="/spotify/full_logo_white.png" />
 
           <div className="flex justify-end items-end w-full invisible group-hover:visible">
-            <img
-              src="src/assets/arrow_outward.png"
-              className="w-[20px] h-[20px]"
-            />
+            <img src="/arrow_outward.png" className="w-[20px] h-[20px]" />
           </div>
         </div>
 
@@ -65,7 +59,7 @@ const Track = ({ track, animationDelay, onLikeIconClick }: TrackProps) => {
             onLikeIconClick(track.id, Boolean(track.likedByCurrentUser))
           }
           className="w-[20px] h-[20px] hover:cursor-pointer"
-          src={`src/assets/spotify/${
+          src={`/spotify/${
             track.likedByCurrentUser
               ? 'like_icon_liked.png'
               : 'like_icon_like.png'

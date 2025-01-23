@@ -1,6 +1,6 @@
-const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string;
-const SPOTIFY_CLIENT_SECRET = import.meta.env
-  .VITE_SPOTIFY_CLIENT_SECRET as string;
+const SPOTIFY_ENCODED_CLIENT_SECRET = import.meta.env
+  .VITE_SPOTIFY_ENCODED_CLIENT_SECRET;
+const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 const MODE = import.meta.env.MODE;
 
 import {
@@ -131,9 +131,7 @@ export const fetchClientAccessToken = async () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${btoa(
-            `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
-          )}`,
+          Authorization: `Basic ${SPOTIFY_ENCODED_CLIENT_SECRET}`,
         },
         body: 'grant_type=client_credentials',
       });

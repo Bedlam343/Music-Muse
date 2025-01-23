@@ -4,6 +4,7 @@ const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 const SPOTIFY_REDIRECT_URI = import.meta.env.VITE_SPOTIFY_REDIRECT_URI;
 const MODE = import.meta.env.MODE;
 
+import { toast } from 'react-toastify';
 import {
   SPOTIFY_AUTH_SCOPE,
   SPOTIFY_ACCOUNTS_BASE_URL,
@@ -109,6 +110,11 @@ export const handleSpotifyCallback = async () => {
 
     const expiresAt = Date.now() + expires_in * 100;
     localStorage.setItem(USER_EXPIRES_AT, expiresAt.toString());
+
+    toast('Spotify Account Linked', {
+      type: 'success',
+      position: 'top-center',
+    });
   } else {
     console.warn('No code or codeVerifier');
   }

@@ -54,9 +54,13 @@ function App() {
       const expiresAt = localStorage.getItem(USER_EXPIRES_AT);
 
       if (!userAccessToken || userAccessToken === 'undefined') {
+        localStorage.removeItem(USER_ACCESS_TOKEN);
+        localStorage.removeItem(USER_EXPIRES_AT);
         await handleSpotifyCallback();
-      } else if (expiresAt && refreshToken && Number(expiresAt) <= Date.now()) {
-        await getRefreshUserAccessToken(refreshToken);
+      } else if (refreshToken) {
+        if (!isNaN(Number(expiresAt)) && Number(expiresAt) <= Date.now()) {
+          await getRefreshUserAccessToken(refreshToken);
+        }
       }
 
       userAccessToken = localStorage.getItem(USER_ACCESS_TOKEN);
@@ -195,12 +199,24 @@ function App() {
     }
   };
 
+  const unlikeAllTracks = () => {
+    setTracks((prevTracks) => {
+      const updatedTracks = [...prevTracks];
+      updatedTracks.forEach((track) => (track.likedByCurrentUser = false));
+      return updatedTracks;
+    });
+  };
+
   const handleSpotifyUnlink = () => {
     setCurrentUser(undefined);
+    unlikeAllTracks();
     localStorage.removeItem(USER_ACCESS_TOKEN);
     localStorage.removeItem(USER_REFRESH_TOKEN);
     localStorage.removeItem(USER_EXPIRES_AT);
-    toast('Spotify Account Unlinked', { position: 'top-center' });
+    toast('Spotify Account Unlinked', {
+      position: 'top-center',
+      type: 'success',
+    });
   };
 
   const renderSpotifyConnectModal = () => {

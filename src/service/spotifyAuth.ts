@@ -1,10 +1,10 @@
 const SPOTIFY_ENCODED_CLIENT_SECRET = import.meta.env
   .VITE_SPOTIFY_ENCODED_CLIENT_SECRET;
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+const SPOTIFY_REDIRECT_URI = import.meta.env.VITE_SPOTIFY_REDIRECT_URI;
 const MODE = import.meta.env.MODE;
 
 import {
-  REDIRECT_URI,
   SPOTIFY_AUTH_SCOPE,
   SPOTIFY_ACCOUNTS_BASE_URL,
   SPOTIFY_API_BASE_URL,
@@ -36,7 +36,7 @@ export const redirectToSpotify = async (state: {
     scope: SPOTIFY_AUTH_SCOPE,
     code_challenge_method: 'S256',
     code_challenge: codeChallenge,
-    redirect_uri: REDIRECT_URI,
+    redirect_uri: SPOTIFY_REDIRECT_URI,
   };
 
   AUTH_URL.search = new URLSearchParams(params).toString();
@@ -92,7 +92,7 @@ export const handleSpotifyCallback = async () => {
         client_id: SPOTIFY_CLIENT_ID,
         grant_type: 'authorization_code',
         code,
-        redirect_uri: REDIRECT_URI,
+        redirect_uri: SPOTIFY_REDIRECT_URI,
         code_verifier: codeVerifier,
       }),
     };

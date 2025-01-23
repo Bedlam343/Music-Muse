@@ -12,20 +12,20 @@ import {
   removeTrack,
   fetchClientAccessToken,
   getRefreshUserAccessToken,
-  // fetchTrackRecommendations,
 } from 'src/service';
 import Parameters from 'src/components/Parameters';
 import Modal from 'src/components/common/Modal';
 import LinkSpotifyAccount from 'src/components/LinkSpotifyAccount';
 import {
   CLIENT_ACCESS_TOKEN,
-  CLIENT_EXPIRES_AT,
   DEFAULT_PARAMETERS,
   DUMMY_RECOMMENDATIONS,
   USER_ACCESS_TOKEN,
   USER_EXPIRES_AT,
   USER_REFRESH_TOKEN,
 } from 'src/utils/constants';
+
+window.onload = fetchClientAccessToken;
 
 function App() {
   const [currentUser, setCurrentUser] = useState<User>();
@@ -67,25 +67,7 @@ function App() {
       }
     };
 
-    const getClientAccessToken = async () => {
-      const clientAccessToken = localStorage.getItem(CLIENT_ACCESS_TOKEN);
-      const expiresAt = localStorage.getItem(CLIENT_EXPIRES_AT);
-
-      // fetch client access token if not token or previous one expired
-      if (
-        !clientAccessToken ||
-        (expiresAt && Number(expiresAt) <= Date.now())
-      ) {
-        const data = await fetchClientAccessToken();
-        if (data) {
-          localStorage.setItem(CLIENT_ACCESS_TOKEN, data.clientAccessToken);
-          localStorage.setItem(CLIENT_EXPIRES_AT, data.expiresAt.toString());
-        }
-      }
-    };
-
     getUserInformation();
-    getClientAccessToken();
 
     const stateStr = localStorage.getItem('state');
     if (!stateStr) return;

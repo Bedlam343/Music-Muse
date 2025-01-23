@@ -12,6 +12,8 @@ import {
   USER_EXPIRES_AT,
   USER_REFRESH_TOKEN,
   SPOTIFY_CODE_VERIFIER,
+  CLIENT_ACCESS_TOKEN,
+  CLIENT_EXPIRES_AT,
 } from 'src/utils/constants';
 import { generateCodeChallenge, generateCodeVerifier } from 'src/utils/helpers';
 import { Parameters, Track, User } from 'src/utils/types';
@@ -114,13 +116,17 @@ export const handleSpotifyCallback = async () => {
 
 export const fetchClientAccessToken = async () => {
   try {
-    let response;
+    const clientAcessToken = localStorage.getItem(CLIENT_ACCESS_TOKEN);
+    const expires = localStorage.getItem(CLIENT_EXPIRES_AT);
 
-    console.log('mode', MODE);
+    // already have token and is not expired
+    if (clientAcessToken && expires && Number(expires) <= Date.now()) return;
+
+    let response;
 
     if (MODE === 'production') {
       console.log('calling serverless function');
-      response = await fetch('../.netlify/functions/fetchClientAccessToken');
+      response = await fetch('/.netlify/functions/fetchClientAccessToken');
     } else {
       response = await fetch(`${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`, {
         method: 'POST',
@@ -145,10 +151,8 @@ export const fetchClientAccessToken = async () => {
     const { access_token, expires_in } = data;
     const expiresAt = Date.now() + expires_in * 100;
 
-    return {
-      clientAccessToken: access_token as string,
-      expiresAt,
-    };
+    localStorage.setItem(CLIENT_ACCESS_TOKEN, access_token);
+    localStorage.setItem(CLIENT_EXPIRES_AT, expiresAt.toString());
   } catch (error) {
     console.error(error);
     return undefined;

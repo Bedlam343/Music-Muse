@@ -12,6 +12,7 @@ import {
   removeTrack,
   fetchClientAccessToken,
   getRefreshUserAccessToken,
+  fetchTrackRecommendations,
 } from 'src/service';
 import Parameters from 'src/components/Parameters';
 import Modal from 'src/components/common/Modal';
@@ -19,7 +20,6 @@ import LinkSpotifyAccount from 'src/components/LinkSpotifyAccount';
 import {
   CLIENT_ACCESS_TOKEN,
   DEFAULT_PARAMETERS,
-  DUMMY_RECOMMENDATIONS,
   USER_ACCESS_TOKEN,
   USER_EXPIRES_AT,
   USER_REFRESH_TOKEN,
@@ -137,10 +137,10 @@ function App() {
     const clientAccessToken = localStorage.getItem(CLIENT_ACCESS_TOKEN);
     if (!clientAccessToken) return;
 
-    // fetchTrackRecommendations(parameters);
+    const recommendations = await fetchTrackRecommendations(parameters);
 
-    const promises = DUMMY_RECOMMENDATIONS.map((entry) => {
-      const [trackname, artistname] = entry.split(',');
+    const promises = recommendations.map((entry) => {
+      const [artistname, trackname] = entry.split(' -- ');
       return searchTrack(trackname, artistname, clientAccessToken);
     });
 
@@ -266,7 +266,7 @@ function App() {
 
   return (
     <>
-      <div className="pt-[20px] pb-[20px] flex flex-col items-center bg-stone-800">
+      <div className="pt-[30px] pb-[30px] flex flex-col items-center bg-stone-800">
         <div className="flex flex-col items-center">
           <div className="flex items-center gap-[5px]">
             <p className="text-spotifyGreen text-4xl">&#119070;</p>

@@ -1,4 +1,4 @@
-// import { fetchTrackRecommendations } from 'src/service/openai';
+import { fetchTrackRecommendations } from 'src/service/openai';
 import {
   getTrack,
   searchTrack,
@@ -15,7 +15,7 @@ import {
 } from 'src/service/spotifyAuth';
 
 export {
-  // fetchTrackRecommendations,
+  fetchTrackRecommendations,
   getTrack,
   searchTrack,
   removeTrack,

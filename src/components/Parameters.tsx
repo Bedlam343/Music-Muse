@@ -12,12 +12,14 @@ type ParametersProps = {
   parameters: ParametersType;
   onParameterChange: (event: ChangeEvent<HTMLSelectElement>) => void;
   onRecommend: () => void;
+  disableRecommend: boolean;
 };
 
 const Parameters = ({
   parameters,
   onParameterChange,
   onRecommend,
+  disableRecommend,
 }: ParametersProps) => {
   return (
     <div className="flex flex-col items-center">
@@ -64,11 +66,16 @@ const Parameters = ({
 
       <div className="w-full flex justify-center mt-[30px]">
         <button
+          disabled={disableRecommend}
           onClick={onRecommend}
-          className="hover:cursor-pointer border-2 border-stone-400 rounded-md 
-          px-2 py-1"
+          className={`border-2 border-stone-400 rounded-md 
+          px-2 py-1 text-stone-300 hover:text-stone-200 hover:border-stone-300 ${
+            disableRecommend
+              ? 'hover:cursor-not-allowed'
+              : 'hover:cursor-pointer '
+          }`}
         >
-          <p className="text-stone-300">Recommend</p>
+          <p className="">Recommend</p>
         </button>
       </div>
     </div>

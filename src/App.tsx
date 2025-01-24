@@ -1,6 +1,11 @@
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
-import { Parameters as ParametersType, Track, User } from 'src/utils/types';
+import {
+  Parameters as ParametersType,
+  Track,
+  TracksStatus,
+  User,
+} from 'src/utils/types';
 import TrackList from 'src/components/TrackList';
 import {
   searchTrack,
@@ -35,8 +40,8 @@ function App() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [displayConnectModal, setDisplayConnectModal] =
     useState<boolean>(false);
-
   const [animteSpotifyLink, setAnimateSpotifyLink] = useState<boolean>(false);
+  const [tracksStatus, setTracksStatus] = useState<TracksStatus>('unfetched');
 
   const trackListRef = useRef<HTMLDivElement>(null);
   const linkSpotifyRef = useRef<HTMLDivElement>(null);
@@ -137,16 +142,19 @@ function App() {
     const clientAccessToken = localStorage.getItem(CLIENT_ACCESS_TOKEN);
     if (!clientAccessToken) return;
 
+    setTracksStatus('fetching');
+
     const recommendations = await fetchTrackRecommendations(parameters);
 
     const promises = recommendations.map((entry) => {
-      const [artistname, trackname] = entry.split(' -- ');
+      const [artistname, trackname] = entry.split(' -- ') || entry.split('--');
       return searchTrack(trackname, artistname, clientAccessToken);
     });
 
     const foundTracks = await Promise.all(promises);
     const newTracks = foundTracks.filter((track) => Boolean(track)) as Track[];
     setTracks(newTracks);
+    setTracksStatus('fetched');
   };
 
   const handleSpotifyConnect = () => {
@@ -266,7 +274,7 @@ function App() {
 
   return (
     <>
-      <div className="pt-[30px] pb-[30px] flex flex-col items-center bg-stone-800">
+      <div className="pt-[30px] pb-[50px] flex flex-col items-center bg-stone-800">
         <div className="flex flex-col items-center">
           <div className="flex items-center gap-[5px]">
             <p className="text-spotifyGreen text-4xl">&#119070;</p>
@@ -283,6 +291,7 @@ function App() {
             parameters={parameters}
             onParameterChange={handleParameterChange}
             onRecommend={handleRecommend}
+            disableRecommend={tracksStatus === 'fetching'}
           />
         </div>
 
@@ -302,6 +311,7 @@ function App() {
           tracks={tracks}
           onLikeTrack={handleLikeTrack}
           onUnlikeTrack={handleUnlikeTrack}
+          tracksStatus={tracksStatus}
         />
       </div>
 

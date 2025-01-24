@@ -89,3 +89,5 @@ export type User = {
     width: 300;
   }[];
 };
+
+export type TracksStatus = 'unfetched' | 'fetching' | 'fetched';

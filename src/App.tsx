@@ -51,21 +51,30 @@ function App() {
     [tracks]
   );
 
+  useEffect(() => {
+    const refreshUser = () => {
+      const refreshToken = localStorage.getItem(USER_REFRESH_TOKEN);
+      if (refreshToken) {
+        getRefreshUserAccessToken(refreshToken);
+      }
+    };
+
+    // refresh user every 15 minutes
+    const timeout: NodeJS.Timeout = setInterval(refreshUser, 1000 * 60 * 15);
+
+    return () => clearInterval(timeout);
+  }, []);
+
   // on initial window load
   useEffect(() => {
     const getUserInformation = async () => {
       let userAccessToken = localStorage.getItem(USER_ACCESS_TOKEN);
-      const refreshToken = localStorage.getItem(USER_REFRESH_TOKEN);
-      const expiresAt = localStorage.getItem(USER_EXPIRES_AT);
 
       if (!userAccessToken || userAccessToken === 'undefined') {
         localStorage.removeItem(USER_ACCESS_TOKEN);
         localStorage.removeItem(USER_EXPIRES_AT);
+        localStorage.removeItem(USER_REFRESH_TOKEN);
         await handleSpotifyCallback();
-      } else if (refreshToken) {
-        if (!isNaN(Number(expiresAt)) && Number(expiresAt) <= Date.now()) {
-          await getRefreshUserAccessToken(refreshToken);
-        }
       }
 
       userAccessToken = localStorage.getItem(USER_ACCESS_TOKEN);

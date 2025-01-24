@@ -2,12 +2,12 @@ import OpenAI from 'openai';
 import { Parameters } from 'src/utils/types';
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string;
 
-const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true,
-});
-
 export default async (parameters: Parameters) => {
+  const openai = new OpenAI({
+    apiKey: OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true,
+  });
+
   const query = Object.keys(parameters)
     .map(
       (parameterKey) =>

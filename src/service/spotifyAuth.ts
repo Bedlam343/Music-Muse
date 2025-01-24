@@ -15,6 +15,7 @@ import {
   SPOTIFY_CODE_VERIFIER,
   CLIENT_ACCESS_TOKEN,
   CLIENT_EXPIRES_AT,
+  NETLIFY_SERVERLESS_BASE_URL,
 } from 'src/utils/constants';
 import { generateCodeChallenge, generateCodeVerifier } from 'src/utils/helpers';
 import { Parameters, Track, User } from 'src/utils/types';
@@ -131,7 +132,9 @@ export const fetchClientAccessToken = async () => {
     let response;
 
     if (MODE === 'production') {
-      response = await fetch('/.netlify/functions/fetchClientAccessToken');
+      response = await fetch(
+        `${NETLIFY_SERVERLESS_BASE_URL}/fetchClientAccessToken`
+      );
     } else {
       response = await fetch(`${SPOTIFY_ACCOUNTS_BASE_URL}/api/token`, {
         method: 'POST',

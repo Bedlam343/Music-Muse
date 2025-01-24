@@ -12,6 +12,8 @@ export const USER_EXPIRES_AT = 'user_expires_at';
 export const USER_REFRESH_TOKEN = 'user_refresh_token';
 export const SPOTIFY_CODE_VERIFIER = 'spotify_code_verifier';
 
+export const NETLIFY_SERVERLESS_BASE_URL = '/.netlify/functions';
+
 export const DEFAULT_PARAMETERS: Parameters = {
   genre: Genre['Hip-Hop'],
   timeOfDay: TimeOfDay.Morning,

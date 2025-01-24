@@ -33,8 +33,8 @@ const TrackList = forwardRef(
     if (tracks.length === 0 && tracksStatus === 'unfetched') return null;
 
     const renderTrackList = () => {
-      if (tracksStatus === 'fetched') {
-        if (tracks.length === 0) {
+      if (tracksStatus === 'fetched' || tracksStatus === 'unfetched') {
+        if (tracks.length === 0 && tracksStatus === 'unfetched') {
           return (
             <div className="flex flex-col items-center gap-[10px]">
               <p className="text-red-400">Error. Could not find tracks.</p>

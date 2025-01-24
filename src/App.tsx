@@ -321,6 +321,7 @@ function App() {
           onLikeTrack={handleLikeTrack}
           onUnlikeTrack={handleUnlikeTrack}
           tracksStatus={tracksStatus}
+          onRecommend={handleRecommend}
         />
       </div>
 

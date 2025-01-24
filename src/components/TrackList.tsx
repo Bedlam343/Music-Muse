@@ -8,11 +8,18 @@ type TrackListProps = {
   onLikeTrack: (trackId: string) => void;
   onUnlikeTrack: (trackId: string) => void;
   tracksStatus: 'fetching' | 'fetched' | 'unfetched';
+  onRecommend: () => void;
 };
 
 const TrackList = forwardRef(
   (
-    { tracks, onLikeTrack, onUnlikeTrack, tracksStatus }: TrackListProps,
+    {
+      tracks,
+      onLikeTrack,
+      onUnlikeTrack,
+      tracksStatus,
+      onRecommend,
+    }: TrackListProps,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
     const handleIconClick = (trackId: string, liked: boolean) => {
@@ -26,7 +33,20 @@ const TrackList = forwardRef(
     if (tracks.length === 0 && tracksStatus === 'unfetched') return null;
 
     const renderTrackList = () => {
-      if (tracksStatus === 'fetched' && tracks.length) {
+      if (tracksStatus === 'fetched') {
+        if (tracks.length === 0) {
+          return (
+            <div className="flex flex-col items-center gap-[10px]">
+              <p className="text-red-400">Error. Could not find tracks.</p>
+              <button
+                onClick={onRecommend}
+                className="px-2 text-sm py-1 border-[1px] rounded-lg border-stone-400 text-stone-300"
+              >
+                Try again
+              </button>
+            </div>
+          );
+        }
         return (
           <div
             className="flex justify-center gap-x-[30px] gap-y-[40px]
@@ -42,7 +62,7 @@ const TrackList = forwardRef(
             ))}
           </div>
         );
-      } else if (tracksStatus === 'fetching' && tracks.length === 0) {
+      } else if (tracksStatus === 'fetching') {
         return (
           <div className="flex justify-center">
             <Spinner text="Searching..." />

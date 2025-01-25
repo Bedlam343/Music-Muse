@@ -3,7 +3,6 @@ export enum Genre {
   'Pop' = 'Pop',
   'Popular Music' = 'Popular Music',
   'Rock' = 'Rock',
-  'Rhythm & Blues' = 'Rhythm & Blues',
   'Country' = 'Country',
   'Electronic' = 'Electronic',
   'Jazz' = 'Jazz',

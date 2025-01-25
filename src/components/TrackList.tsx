@@ -2,6 +2,7 @@ import { ForwardedRef, forwardRef } from 'react';
 import Track from 'src/components/Track';
 import { Track as TrackType } from 'src/utils/types';
 import Spinner from 'src/components/common/Spinner';
+import Refresh from 'src/icons/Refresh';
 
 type TrackListProps = {
   tracks: TrackType[];
@@ -48,18 +49,31 @@ const TrackList = forwardRef(
           );
         }
         return (
-          <div
-            className="flex justify-center gap-x-[30px] gap-y-[40px]
+          <div className="flex flex-col items-center gap-[40px]">
+            <div
+              className="flex justify-center gap-x-[30px] gap-y-[40px]
       max-w-[900px] flex-wrap px-[20px]"
-          >
-            {tracks.map((track, index) => (
-              <Track
-                key={track.id}
-                track={track}
-                animationDelay={0.1 * index}
-                onLikeIconClick={handleIconClick}
-              />
-            ))}
+            >
+              {tracks.map((track, index) => (
+                <Track
+                  key={track.id}
+                  track={track}
+                  animationDelay={0.1 * index}
+                  onLikeIconClick={handleIconClick}
+                />
+              ))}
+            </div>
+
+            <div
+              onClick={onRecommend}
+              style={{ opacity: 0, animationDelay: `${0.1 * tracks.length}s` }}
+              className="flex flex-col items-center hover:cursor-pointer animate-appear group"
+            >
+              <Refresh height={40} width={40} />
+              <p className="text-stone-300 text-lg text-center group-hover:underline underline-offset-2">
+                Refresh
+              </p>
+            </div>
           </div>
         );
       } else if (tracksStatus === 'fetching') {

@@ -69,8 +69,13 @@ function App() {
   useEffect(() => {
     const getUserInformation = async () => {
       let userAccessToken = localStorage.getItem(USER_ACCESS_TOKEN);
+      const userExpiresAt = localStorage.getItem(USER_EXPIRES_AT);
 
-      if (!userAccessToken || userAccessToken === 'undefined') {
+      if (
+        !userAccessToken ||
+        userAccessToken === 'undefined' ||
+        (userExpiresAt && Number(userExpiresAt) <= Date.now())
+      ) {
         localStorage.removeItem(USER_ACCESS_TOKEN);
         localStorage.removeItem(USER_EXPIRES_AT);
         localStorage.removeItem(USER_REFRESH_TOKEN);
